@@ -3,7 +3,7 @@ from datetime import timedelta as timed
 import datetime
 import time
 from gluon.storage import Storage
-from gluon import current
+# from gluon import current
 from gluon.serializers import json as dumps
 from gluon.tools import prettydate
 from plugin_cs_monitor.html_helpers import nice_worker_status, graph_colors_task_status
@@ -40,12 +40,12 @@ TASKS_SUMMARY_CACHE_TIME = 10
 PAGINATE = 10
 ##Configure end
 
-s = current._scheduler
-dbs = s.db
-st = dbs.scheduler_task
-sw = dbs.scheduler_worker
-sr = dbs.scheduler_run
-sd = dbs.scheduler_task_deps
+# s = current._scheduler
+# dbs = s.db
+# st = dbs.scheduler_task
+# sw = dbs.scheduler_worker
+# sr = dbs.scheduler_run
+# sd = dbs.scheduler_task_deps
 
 
 ANALYZE_CACHE_KWARGS = {

@@ -114,3 +114,35 @@ CREATE TABLE scheduler_task_deps(
     can_visit CHAR(1)
 );
 success!
+timestamp: 2015-02-12T21:30:39.135986
+CREATE TABLE input_data(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    input_value TEXT
+);
+success!
+timestamp: 2015-02-12T21:35:35.346022
+CREATE TABLE simulation(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    simulation_date TIMESTAMP,
+    algorithm CHAR(512),
+    input_data INTEGER REFERENCES input_data (id) ON DELETE CASCADE,
+    simulation_result CHAR(512),
+    simulation_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2015-02-12T21:36:05.335336
+CREATE TABLE simulation_log(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    simulation INTEGER REFERENCES simulation (id) ON DELETE CASCADE,
+    log_content CHAR(512),
+    log_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2015-02-12T21:36:05.348804
+CREATE TABLE simulation_plot(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    simulation INTEGER REFERENCES simulation (id) ON DELETE CASCADE,
+    plot_content CHAR(512),
+    plot_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!

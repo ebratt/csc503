@@ -25,12 +25,15 @@ response.google_analytics_id = None
 ## this is the main application menu add/remove items as required
 #########################################################################
 
-response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
-]
-response.menu += [
-    (T('Monitor'), False, URL('plugin_cs_monitor', 'index'), [])
-]
+if auth.is_logged_in():
+    response.menu = [
+        (T('Home'), False, URL('default', 'index'), []),
+        ('Tasks', False, None, [
+            ('Floating Point Add', False, URL('floating_point_add', 'index')),
+            ]),
+        (T('Monitor'), False, URL('plugin_cs_monitor', 'index'), [])
+    ]
+
 
 DEVELOPMENT_MENU = True
 
@@ -44,7 +47,7 @@ def _():
     ctr = request.controller
     # useful links to internal and external resources
     response.menu += [
-        (SPAN('admin', _class='highlighted'), False, URL('admin', 'default'), [
+        (SPAN('****DEV MENU****', _class='highlighted'), False, URL('admin', 'default'), [
         (T('My Sites'), False, URL('admin', 'default', 'site')),
         (T('This App'), False, URL('admin', 'default', 'design/%s' % app))]
         )]
