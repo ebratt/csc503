@@ -1,0 +1,44 @@
+{{extend 'plugin_cs_monitor/layout.html'}}
+
+<div class="btn-group">
+    <button id="jobs_autorefresh" type="button" class="btn btn-primary">Auto-Refresh <span class="glyphicon"></span></button>
+</div>
+
+{{refresh = request.vars.refresh == '1'}}
+{{job_name = request.vars.job_name and dict(job_name=request.vars.job_name) or None}}
+
+<div class="row">
+{{if refresh:}}
+    <div class="col-md-12">
+        {{=LOAD(url=URL('jobs_render', vars=job_name, user_signature=True, hash_vars=False), ajax=True, target="jobs_window", times='Infinity', timeout=3000)}}
+    </div>
+{{else:}}
+    <div class="col-md-12">
+        {{=LOAD(url=URL('jobs_render', vars=job_name, user_signature=True, hash_vars=False), ajax=True, target="jobs_window")}}
+    </div>
+{{pass}}
+</div>
+
+{{if job_name:}}
+    {{=LOAD(url=URL('edit_job', vars=job_name, user_signature=True, hash_vars=False))}}
+{{pass}}
+
+
+<script type="text/javascript">
+$(function() {
+    if (window.location.search.indexOf('refresh=1') != -1) {
+        $('#jobs_autorefresh').addClass('active')
+            .find('span').removeClass('glyphicon-repeat').addClass('glyphicon-refresh');
+    }
+    $('#jobs_autorefresh').on('click', function(e) {
+        newlocation = window.location.search.replace('?refresh=1', '') + '&refresh=1'
+        if ($(this).hasClass('active')) {
+            $('#jobs_window').addClass('w2p_component_stop');
+            $(this).removeClass('active')
+                .find('span').removeClass('glyphicon-refresh').addClass('glyphicon-repeat');
+        } else {
+            window.location = window.location.pathname + newlocation;
+        }
+    });
+});
+</script>

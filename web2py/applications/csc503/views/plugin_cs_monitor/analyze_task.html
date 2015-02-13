@@ -1,0 +1,385 @@
+{{extend 'plugin_cs_monitor/layout.html'}}
+
+<h3 class="sub-header">Analyze task</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Actions</h3>
+          </div>
+          <div class="panel-body">
+            <div class="list-group">
+                {{if first_run:}}
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">Run Details</h4>
+                        <p class="list-group-item-text">First Run: {{=first_run_pretty}}</p>
+                        <p class="list-group-item-text">Last Run: {{=last_run_pretty}}</p>
+                    </div>
+                {{pass}}
+                <div class="list-group-item">
+                    <h4 class="list-group-item-heading">Analyze</h4>
+                    {{=P(A('Just this task : %s' % (task.uuid), _href=URL(args=request.args(0), user_signature=True)), _class="list-group-item-text")}}
+                    {{=P(A('All tasks by function name : %s' % (task.function_name), _href=URL(args=(request.args(0), 'byfunction'), user_signature=True)), _class="list-group-item-text")}}
+                    {{=P(A('All tasks by task name name : %s' % (task.task_name), _href=URL(args=(request.args(0), 'bytaskname'), user_signature=True)), _class="list-group-item-text")}}
+                </div>
+                <div class="list-group-item">
+                <h4 class="list-group-item-heading">Timeframe</h4>
+                    {{if len(request.args) == 1:}}
+                        {{=P(A('Just today', _href=URL(args=(request.args(0), 'this', 'bydate', 0), user_signature=True)), _class="list-group-item-text")}}
+                    {{elif len(request.args) == 2:}}
+                        {{=P(A('Just today', _href=URL(args=(request.args(0), request.args(1), 'byday', 0), user_signature=True)), _class="list-group-item-text")}}
+                    {{elif len(request.args) == 4:}}
+                        {{=P(A('Previous Day', _href=URL(args=(request.args(0), request.args(1), 'byday', int(request.args(3)) + 1), user_signature=True)), _class="list-group-item-text")}}
+                        {{=P(A('Next Day', _href=URL(args=(request.args(0), request.args(1), 'byday', int(request.args(3)) - 1), user_signature=True)), _class="list-group-item-text")}}
+                    {{pass}}
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-md-offset-4">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Status</h3>
+          </div>
+          <div class="panel-body">
+            <div id="bystatus"></div>
+          </div>
+        </div>
+    </div>
+</div>
+{{if len(request.args) == 4:}}
+<div class="row">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Single Day</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+            <div id="bydated"></div>
+        </div>
+        <div class="row">
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input type="radio" name="bydatedbtn" value="line"> line
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatedbtn" value="spline"> spline
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatedbtn" value="bar"> bar
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatedbtn" value="area"> area
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatedbtn" value="area-spline"> area spline
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatedbtn" value="scatter"> scatter
+                </label>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+{{pass}}
+{{if first_run:}}
+<div class="row">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Duration</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+            <div id="byduration"></div>
+        </div>
+        <div class="row">
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input type="radio" name="bydurationbtn" value="line"> line
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydurationbtn" value="spline"> spline
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydurationbtn" value="bar"> bar
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydurationbtn" value="area"> area
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydurationbtn" value="area-spline"> area spline
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydurationbtn" value="scatter"> scatter
+                </label>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+{{pass}}
+<div class="row">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Dates</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row"><div id="bydate"></div></div>
+        <div class="row">
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input type="radio" name="bydatebtn" value="line"> line
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatebtn" value="spline"> spline
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatebtn" value="bar"> bar
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatebtn" value="area"> area
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatebtn" value="area-spline"> area spline
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="bydatebtn" value="scatter"> scatter
+                </label>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+<script>
+$(function () {
+
+    var jgb_status_series = {{=XML(jgb_status_series)}};
+    var columns_ = []; colors_ = {};
+    _.each(jgb_status_series, function(e, i, l) {
+        columns_.push([e['label'], e['data']]);
+        colors_[e['label']] = e['color'];
+    });
+    if (!columns_.length) columns_ = [['', 0]];
+    var chart = c3.generate({
+        bindto: '#bystatus',
+        data: {
+          columns: columns_,
+          colors : colors_,
+          labels : true,
+          type : 'pie'
+        }
+    });
+
+    var jgb_when_series = {{=XML(jgb_when_series)}};
+    var x_ = [], columns_ = []; colors_ = {};
+
+    var series = {};
+    _.each(jgb_when_series, function(e, i, l) {
+        series[e['label']] = {};
+        colors_[e['label']] = e['color'];
+    });
+    _.each(jgb_when_series, function(status, i_, l_) {
+        _.each(status['data'], function(data, i__, l__) {
+            series[status['label']][data[0]] = data[1];
+            x_.push(data[0])
+        })
+    })
+    var x_ = _.sortBy(x_, _.identity);
+    _.uniq(x_, true);
+    x_0values = {};
+    _.each(x_, function(e, i, l){
+        x_0values[e] = 0
+    })
+    _.each(series, function(v, k, l) {
+        series[k] = _.defaults(v, x_0values);
+    })
+
+    _.each(series, function(v, k, l) {
+        var col = [];
+        _.each(x_, function(e, i, l_) {
+            col.push(series[k][e]);
+        })
+        col.unshift(k);
+        columns_.push(col);
+    })
+
+    x_.unshift('x')
+    columns_.unshift(x_);
+
+
+    var chartdate = c3.generate({
+        bindto: '#bydate',
+        data: {
+            x: 'x',
+            columns: columns_,
+            colors : colors_,
+            labels : true
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m-%d'
+                }
+            },
+            y: {
+                label: '# of tasks'
+            }
+        },
+        subchart: {
+            show: true
+        }
+    });
+    $('input[name=bydatebtn]').on('change', function() {
+        var value = $(this).val();
+        chartdate.transform(value);
+    })
+
+    {{if first_run:}}
+        var jgb_duration_series = {{=XML(jgb_duration_series)}};
+
+        var x_ = [], columns_ = []; colors_ = {}, series = {};
+        _.each(jgb_duration_series, function(e, i, l) {
+            series[e['label']] = {};
+            colors_[e['label']] = e['color'];
+        });
+        _.each(jgb_duration_series, function(status, i_, l_) {
+            _.each(status['data'], function(data, i__, l__) {
+                series[status['label']][data[0]] = data[1];
+                x_.push(data[0])
+            })
+        })
+        var x_ = _.sortBy(x_, _.identity);
+        _.uniq(x_, true);
+        x_0values = {};
+        _.each(x_, function(e, i, l){
+            x_0values[e] = null
+        })
+        _.each(series, function(v, k, l) {
+            series[k] = _.defaults(v, x_0values);
+        })
+
+        _.each(series, function(v, k, l) {
+            var col = [];
+            _.each(x_, function(e, i, l_) {
+                col.push(series[k][e]);
+            })
+            col.unshift(k);
+            columns_.push(col);
+        })
+
+        x_.unshift('x')
+        stringx_ = _.map(x_, function(n){ return n.toString()});
+        columns_.unshift(stringx_);
+
+        var chartduration = c3.generate({
+            bindto: '#byduration',
+            data: {
+                x : 'x',
+                columns: columns_,
+                colors : colors_,
+                labels : true,
+                type: 'bar'
+            },
+            axis: {
+                x: {
+                    label : 'Seconds Elapsed',
+                    type: 'category'
+                },
+                y: {
+                    label: '# of tasks'
+                }
+            },
+            subchart: {
+                show: true
+            }
+        });
+           $('input[name=bydurationbtn]').on('change', function() {
+                var value = $(this).val();
+                chartduration.transform(value);
+            })
+
+    {{pass}}
+    {{if len(request.args) == 4:}}
+
+        var jgb_whend_series = {{=XML(jgb_whend_series)}};
+        var x_ = [], columns_ = []; colors_ = {};
+
+        var series = {};
+        _.each(jgb_whend_series, function(e, i, l) {
+            series[e['label']] = {};
+            colors_[e['label']] = e['color'];
+        });
+        _.each(jgb_whend_series, function(status, i_, l_) {
+            _.each(status['data'], function(data, i__, l__) {
+                series[status['label']][data[0]] = data[1];
+                x_.push(data[0])
+            })
+        })
+        var x_ = _.sortBy(x_, _.identity);
+        _.uniq(x_, true);
+        x_0values = {};
+        _.each(x_, function(e, i, l){
+            x_0values[e] = 0
+        })
+        _.each(series, function(v, k, l) {
+            series[k] = _.defaults(v, x_0values);
+        })
+
+        _.each(series, function(v, k, l) {
+            var col = [];
+            _.each(x_, function(e, i, l_) {
+                col.push(series[k][e]);
+            })
+            col.unshift(k);
+            columns_.push(col);
+        })
+
+        x_.unshift('x')
+        columns_.unshift(x_);
+
+
+
+        var chartdated = c3.generate({
+            bindto: '#bydated',
+            data: {
+                x: 'x',
+                xFormat: '%Y-%m-%d %H:%M',
+                columns: columns_,
+                colors : colors_
+            },
+            line: {
+                connect: {
+                    null: true
+                }
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%Y-%m-%d %H:%M'
+                    }
+                },
+                y: {
+                    label: '# of tasks'
+                }
+            },
+            subchart: {
+                show: true
+            }
+        });
+        $('input[name=bydatedbtn]').on('change', function() {
+            var value = $(this).val();
+            chartdated.transform(value);
+        })
+
+    {{pass}}
+
+});
+</script>

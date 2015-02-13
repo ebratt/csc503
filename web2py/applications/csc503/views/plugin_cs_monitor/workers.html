@@ -1,0 +1,102 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Workers</h3>
+  </div>
+  <div class="panel-body">
+    <div id="pgbar" style="width: 100%;"></div>
+    <table id="worker_status" class="table table-condensed table-hover">
+        <thead>
+            <tr>
+                <th><input id="wchosen_action" name="action" class="hidden" type="string" value="none"/></th>
+                <th data-sort="string">Name</th>
+                <th data-sort="string">Group Names</th>
+                <th data-sort="string">Stats</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{for w_, props in sorted(w.iteritems()):}}
+            <tr>
+                <td>{{=INPUT(_type="checkbox", _name="w_records", _value=w_, value=request.vars.w_records)}}</td>
+                <td>
+                    <div class="worker_stats">
+                        <div class="list-group">
+                            <span class="list-group-item">{{=props.is_ticker and B('TICKER: ', w_ ) or w_}}</span>
+                            <span class="list-group-item">Status {{=props.status_}}</span>
+                            <span class="list-group-item">Started on <span class="rlabel">{{=props.first_heartbeat}}</span></span>
+                            <span class="list-group-item">Last Update <span class="rlabel">{{=props.last_heartbeat}}</span></span>
+                        </div>
+                    </div>
+                </td>
+                <td>{{=', '.join(props.group_names)}}</td>
+                <td>{{=DIV(props.worker_stats_, _class="worker_stats")}}</td>
+            </tr>
+            {{pass}}
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group dropup" id="worker_actions">
+                <button class="btn btn-default" id="worker_all_toggler">Toggle</button>
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" data-action="ACTIVE">Resume</a></li>
+                    <li><a href="#" data-action="DISABLED">Disable</a></li>
+                    <li><a href="#" data-action="TERMINATE">Terminate</a></li>
+                    <li><a href="#" data-action="KILL">Kill</a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button id="workers_autorefresh" type="button" class="btn btn-primary">Auto-Refresh <span class="glyphicon"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+$(function() {
+    if (window.location.search.indexOf('refresh=1') != -1) {
+        $('#workers_autorefresh').addClass('active')
+            .find('span').removeClass('glyphicon-repeat').addClass('glyphicon-refresh');
+    }
+    $("#worker_all_toggler").on('click', function(e) {
+        $('#worker_window').addClass('w2p_component_stop');
+        var checkb = $(this).hasClass('active');
+        $(this).toggleClass('active');
+        var all_checkb = $("#worker_window input[type='checkbox']");
+        checkb ? all_checkb.attr('checked', false) : all_checkb.attr('checked', true);
+    });
+    $('#worker_status tbody tr').on('click', function(e) {
+        $('#worker_window').addClass('w2p_component_stop');
+        if (e.target.type !== 'checkbox') {
+            var inp = $(this).find('input');
+            inp.attr('checked') ? inp.attr('checked', false) : inp.attr('checked', true);
+        }
+    });
+    $('#worker_actions li a').on('click', function(e) {
+        e.preventDefault();
+        $('#worker_window').removeClass('w2p_component_stop');
+        $('#wchosen_action').val($(this).data('action'));
+        var link = '{{=BASEURL}}';
+        $.web2py.ajax(link, '#worker_status input', null);
+        $.web2py.invalidate(document);
+    });
+    $('#workers_autorefresh').on('click', function(e) {
+        newlocation = window.location.search.replace('?refresh=1', '') + '?refresh=1'
+        if ($(this).hasClass('active')) {
+            $('#worker_window').addClass('w2p_component_stop');
+            $('#tasks_window').addClass('w2p_component_stop');
+            $(this).removeClass('active')
+                .find('span').removeClass('glyphicon-refresh').addClass('glyphicon-repeat');
+        } else {
+            window.location = window.location.pathname + newlocation;
+        }
+    });
+    $('#worker_status').stupidtable();
+});
+</script>
