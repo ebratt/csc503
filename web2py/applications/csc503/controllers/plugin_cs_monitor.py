@@ -92,6 +92,7 @@ def workers():
 
 
 @auth.requires_signature()
+@auth.requires_membership('admin')
 def wactions():
     session.forget(response)
     default = URL('workers', user_signature=True)
@@ -113,6 +114,7 @@ def wactions():
 
 
 @auth.requires_signature()
+@auth.requires_membership('admin')
 def tactions():
     session.forget(response)
     default = request.vars.current_page or URL('task_group', user_signature=True)
@@ -312,6 +314,7 @@ def run_traceback():
 
 
 @auth.requires_signature()
+@auth.requires_membership('admin')
 def edit_task():
     task_id = request.args(0)
     if task_id is None:
@@ -659,6 +662,7 @@ def analyze_task():
 
 
 @auth.requires_signature()
+@auth.requires_membership('admin')
 def clear_cache():
     sc_cache.clear("plugin_cs_monitor.*")
     session.flash = 'Cache Cleared'
@@ -666,6 +670,7 @@ def clear_cache():
 
 
 @auth.requires_signature()
+@auth.requires_membership('admin')
 def delete_tasks():
     session.forget(response)
     period = request.args(0)
@@ -746,6 +751,7 @@ def jobs_render():
     return dict(all_jobs=all_jobs, all_edges=dumps(all_edges), all_nodes=dumps(all_nodes), newjob=newjob)
 
 @auth.requires_signature(hash_vars=False)
+@auth.requires_membership('admin')
 def edit_job():
     posted = request.post_vars
     if posted:

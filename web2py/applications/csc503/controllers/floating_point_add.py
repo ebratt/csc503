@@ -27,5 +27,16 @@ What you should see in the monitoring dashboard:
  - when the task is **RUNNING**, a scheduler_run record pops up (**RUNNING**)
  - When the task is **COMPLETED**, the scheduler_run record is updated to show a **COMPLETED** status.
     """
-    return dict(docs=docs)
+    # need a form to capture the simulation information
+    form = SQLFORM(db.simulation, fields=['algorithm', 'input_data'])
+    simulation_id = None
+    if form.process(keepvalues=True).accepted:
+        simulation_id = form.vars.id
+        response.flash = 'form accepted'
+    elif form.errors:
+        response.flash = 'form has errors'
+    else:
+        response.flash = 'please fill out the form'
+
+    return dict(docs=docs, form=form, simulation_id=simulation_id)
 

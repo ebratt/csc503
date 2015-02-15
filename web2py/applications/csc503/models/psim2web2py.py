@@ -29,7 +29,6 @@ db.define_table('simulation',
                 Field('simulation_date', 'datetime', writable=False, default=datetime.datetime.today()),
                 Field('algorithm', requires=IS_IN_SET([(1, 'Floating Point Add'), (2, 'Merge-Sort'), (3, '2nd Derivative')])),
                 Field('input_data', 'reference input_data'),
-                Field('simulation_result', 'string'),
                 Field('simulation_owner', 'reference auth_user', default=auth.user_id, readable=False),
                 format='%(simulation_date)s-%(algorithm)s')
 _algorithm_options = dict(db.simulation.algorithm.requires.options())

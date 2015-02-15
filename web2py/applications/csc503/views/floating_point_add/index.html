@@ -5,10 +5,12 @@
         {{=MARKMIN(docs.floating_point_add)}}
     </div>
 </div>
+{{=H3(T('Please fill-out the form to submit a calculation:'))}}
+{{=form}}
 <div class="row">
     <div class="span12">
         <p>
-            {{=A('Calculate', _class="btn btn-primary autoremove", _href=URL('manage', 'worker1'), _id="worker_1_queue")}}
+            {{=A('Calculate', _class="btn btn-primary autoremove", _href=URL('manage', 'worker1', args=[simulation_id]), _id="worker_1_queue")}}
         <p>
     </div>
 </div>

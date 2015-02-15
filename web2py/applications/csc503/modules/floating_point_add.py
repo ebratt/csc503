@@ -23,8 +23,7 @@ import log
 
 import sys
 
-
-n = 1000000
+input_data = None
 topology = SWITCH
 bases = []
 
@@ -77,7 +76,7 @@ def plot_results():
                  '{0:.2%}'.format(bases[0] / be),
                  ha='center', va='bottom', fontsize=11)
     plt.xlabel('time in seconds for n=%s\ntopology: %s' %
-               (n, repr(topology)), fontsize=14)
+               (input_data, repr(topology)), fontsize=14)
     plt.ylabel('number of processes\n', fontsize=14)
     plt.title('Serial vs. Parallel Scalar Product', fontsize=18)
     plt.ylim([-1, len(bases) + 0.5])
@@ -93,37 +92,37 @@ def run_serial():
     l = logging.getLogger('root')
     l.debug('****RUN_SERIAL()****')
     l.info('****RUN_SERIAL()****')
-    a = [random.random() for _ in range(n)]
-    b = [random.random() for _ in range(n)]
-    head = min(n, 5)
-    scalar = sum(a[i] * b[i] for i in range(n))
+    a = [random.random() for _ in range(input_data)]
+    b = [random.random() for _ in range(input_data)]
+    head = min(input_data, 5)
+    scalar = sum(a[i] * b[i] for i in range(input_data))
     l.debug('head of a         : %s' % a[:head])
     l.debug('head of b         : %s' % b[:head])
-    l.debug('data size         : %d' % n)
+    l.debug('data size         : %d' % input_data)
     l.debug('result            : %f' % scalar)
     l.info('head of a         : %s' % a[:head])
     l.info('head of b         : %s' % b[:head])
-    l.info('data size         : %d' % n)
+    l.info('data size         : %d' % input_data)
     l.info('result            : %f' % scalar)
 
 
 def run_parallel(p):
     l = logging.getLogger('root')
     comm = PSim(p, topology, l)
-    h = n / p
+    h = input_data / p
     if comm.rank == 0:
         l.debug('****RUN_PARALLEL()****')
         l.info('****RUN_PARALLEL()****')
-        head = min(n, 5)
-        a = [random.random() for _ in range(n)]
-        b = [random.random() for _ in range(n)]
+        head = min(input_data, 5)
+        a = [random.random() for _ in range(input_data)]
+        b = [random.random() for _ in range(input_data)]
         l.debug('head of a         : %s' % a[:head])
         l.debug('head of b         : %s' % b[:head])
-        l.debug('data size         : %d' % n)
+        l.debug('data size         : %d' % input_data)
         l.debug('# processes       : %d' % p)
         l.info('head of a         : %s' % a[:head])
         l.info('head of b         : %s' % b[:head])
-        l.info('data size         : %d' % n)
+        l.info('data size         : %d' % input_data)
         l.info('# processes       : %d' % p)
         for k in range(1, p):
             comm.send(k, a[k * h:k * h + h])
@@ -144,12 +143,50 @@ def run_parallel(p):
 
 if __name__ == "__main__":
 
-    # TODO: need to read the number and the topology from the db
-    # TODO:  need to write the results back to the db
+    # let's get the simulation information from the db
+    # check required parameters passed-in
+    api_url = sys.argv[1] or None
+    if api_url is None:
+        raise Exception('no api url!')
+    simulation_id = int(sys.argv[2]) or None
+    if simulation_id is None:
+        raise Exception('no simulation id!')
+    owner_id = sys.argv[3] or None
+    if owner_id is None:
+        raise Exception('no owner id!')
+    session_id = sys.argv[4] or None
+    if owner_id is None:
+        raise Exception('no session id!')
+    # make the get calls
+    import requests                                 # to call api
+    from requests.auth import HTTPBasicAuth         # to authenticate
+    auth = HTTPBasicAuth('api@api.com', 'pass')     # TODO: change this in prod
+    sim_input_get = requests.get(api_url + '/simulation/id/' +
+                                 str(simulation_id) +
+                                 '/input_data.json',
+                                 auth=auth)
+    import json
+    sim_input_json = json.loads(sim_input_get.text)
+    input_data_id = sim_input_json['content'][0]['input_data']
+    input_data_get = requests.get(api_url +
+                                  '/input-data/id/' +       # why input-id?
+                                  str(input_data_id) +
+                                  '/input_value.json',
+                                  auth=auth)
+    input_json = json.loads(input_data_get.text)
+    try:
+        input_data = int(input_json['content'][0]['input_value'][0])
+    except:
+        raise Exception('invalid input data')
 
-    private_folder = sys.argv[1]
-    logfile = private_folder + 'floating_point_add_example.log'
-    pngfilename = private_folder + 'floating_point_add_example.png'
+    logfile = str(simulation_id) + '_' + \
+              str(owner_id) + '_' + \
+              str(session_id) + '_' + \
+              'floating_point_add_example.log'
+    pngfilename = str(simulation_id) + '_' + \
+                  str(owner_id) + '_' + \
+                  str(session_id) + '_' + \
+                  'floating_point_add_example.png'
     logger = log.setup_custom_logger('root', logfile, logging.INFO)
     log_system_info()
     logger.debug('main: START')
@@ -176,12 +213,24 @@ if __name__ == "__main__":
                            setup='from __main__ import run_parallel',
                            number=1))
     plot_results()
+
+    # Now we need to upload the log file and the plot png (POST) to the
+    # simulation_log.log_content and simulation_plot.plot_content,
+    # respectively.
+    log_files = {'log_content': open(logfile, 'rb')}
+    plot_files = {'plot_content': open(pngfilename, 'rb')}
+    log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
+    plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
+    logger.debug('log_payload: %s' % log_payload)
+    logger.debug('plot_payload: %s' % plot_payload)
+    logger.info('log_payload: %s' % log_payload)
+    logger.info('plot_payload: %s' % plot_payload)
     logger.debug('main: END')
     logger.info('main: END')
+    log_r = requests.post(api_url + '/simulation_log/', data=log_payload, files=log_files, auth=auth)
+    plot_r = requests.post(api_url + '/simulation_plot/', data=plot_payload, files=plot_files, auth=auth)
+    os.remove(logfile)
+    os.remove(pngfilename)
 
 __author__ = 'Eric Bratt'
 __version__ = 'version 1.0'
-
-
-# use curl -X PUT -d Result=[1,2,3] --user eric_bratt@yahoo.com:pass http://127.0.0.1:8000/psim2web2py/default/api/Simulation?id=4
-# to updat the db

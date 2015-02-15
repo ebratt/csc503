@@ -20,14 +20,12 @@ def index():
     rows = scope.scoped_dataset.select(db.simulation.simulation_date,
                                        db.simulation.algorithm,
                                        db.simulation.input_data,
-                                       db.simulation.simulation_result,
                                        db.simulation_log.log_content,
                                        db.simulation_plot.plot_content,
                                        orderby=orderby_selector.orderby())
     headers = {'simulation.simulation_date': {'selected': True},
                'simulation.algorithm': {'selected': False},
-               'simulation.input_data': {'selected': False},
-               'simulation.simulation_result': {'selected': False}
+               'simulation.input_data': {'selected': False}
     }
     extracolumns = [{'label': A('Log', _href='#'),
                      'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_log.log_content)},
@@ -37,7 +35,7 @@ def index():
     columns = [db.simulation.simulation_date,
                db.simulation.algorithm,
                db.simulation.input_data,
-               db.simulation.simulation_result, extracolumns[0]]
+               extracolumns[0]]
     table = SOLIDTABLE(rows,
                        columns=columns,
                        extracolumns=extracolumns,
@@ -84,14 +82,65 @@ def call():
     return service()
 
 
-@auth.requires_login() 
+auth.settings.allow_basic_login = True
+# @auth.requires_login()
+@auth.requires_membership('api')
+# @auth.requires_signature()
+@request.restful()
 def api():
-    """
-    this is example of API with access control
-    WEB2PY provides Hypermedia API (Collection+JSON) Experimental
-    """
-    from gluon.contrib.hypermedia import Collection
-    rules = {
-        '<tablename>': {'GET':{},'POST':{},'PUT':{},'DELETE':{}},
-        }
-    return Collection(db).process(request,response,rules)
+    response.view = 'generic.'+request.extension
+    def GET(*args,**vars):
+        patterns = 'auto'
+        parser = db.parse_as_rest(patterns,args,vars)
+        if parser.status == 200:
+            return dict(content=parser.response)
+        else:
+            raise HTTP(parser.status,parser.error)
+    def POST(table_name,**vars):
+        return db[table_name].validate_and_insert(**vars)
+    def PUT(table_name,record_id,**vars):
+        return db(db[table_name]._id==record_id).update(**vars)
+    def DELETE(table_name,record_id):
+        return db(db[table_name]._id==record_id).delete()
+    return dict(GET=GET, POST=POST, PUT=PUT, DELETE=DELETE)
+
+
+@auth.requires_membership("admin") # uncomment to enable security 
+def list_users():
+    btn = lambda row: A("Edit", _href=URL('manage_user', args=row.auth_user.id))
+    db.auth_user.edit = Field.Virtual(btn)
+    rows = db(db.auth_user).select()
+    headers = ["ID", "Name", "Last Name", "Email", "Edit"]
+    fields = ['id', 'first_name', 'last_name', "email", "edit"]
+    table = TABLE(THEAD(TR(*[B(header) for header in headers])),
+                  TBODY(*[TR(*[TD(row[field]) for field in fields]) \
+                        for row in rows]))
+    table["_class"] = "table table-striped table-bordered table-condensed"
+    return dict(table=table)
+
+
+@auth.requires_membership("admin") # uncomment to enable security 
+def manage_user():
+    user_id = request.args(0) or redirect(URL('list_users'))
+    form = SQLFORM(db.auth_user, user_id).process()
+    membership_panel = LOAD(request.controller,
+                            'manage_membership.html',
+                             args=[user_id],
+                             ajax=True)
+    return dict(form=form,membership_panel=membership_panel)
+
+
+@auth.requires_membership("admin") # uncomment to enable security 
+def manage_membership():
+    user_id = request.args(0) or redirect(URL('list_users'))
+    db.auth_membership.user_id.default = int(user_id)
+    db.auth_membership.user_id.writable = False
+    form = SQLFORM.grid(db.auth_membership.user_id == user_id,
+                       args=[user_id],
+                       searchable=False,
+                       deletable=False,
+                       details=False,
+                       selectable=False,
+                       csv=False,
+                       user_signature=False)
+    return form

@@ -33,6 +33,10 @@ if auth.is_logged_in():
             ]),
         (T('Monitor'), False, URL('plugin_cs_monitor', 'index'), [])
     ]
+    if auth.has_membership('admin'):
+		response.menu += [
+			('Admin', False, URL('default', 'list_users'))
+	]
 
 
 DEVELOPMENT_MENU = True
