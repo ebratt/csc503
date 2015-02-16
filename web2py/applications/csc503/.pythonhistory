@@ -263,3 +263,82 @@ algorithm[0]
 algorithm[0].Name
 algorithm = db(db.algorithm.id==1).select()[0].Name
 algorithm
+algorithm = db(db.algorithm.name=='floating_point_add').select()[0].id
+algorithm = db(db.algorithm.Name=='floating_point_add').select()[0].id
+algorithm
+algorithm = db(db.algorithm.Name=='floating_point_add').select()[0].id.as_list()
+algorithm = [db(db.algorithm.Name=='floating_point_add').select()[0].id]
+algorithm
+algorithms = db(db.algorithm.Name=='floating_point_add').select().id
+algorithms = db(db.algorithm.Name=='floating_point_add').select(id)
+algorithms = db(db.algorithm.Name=='floating_point_add').select(ALL)
+algorithms = db(db.algorithm.Name=='floating_point_add').select('id')
+algorithms
+algorithms.as_list
+algorithms.as_list()
+algorithms()
+algorithms
+for a in algorithms: print a
+algorithms.as_list()['id']
+algorithms.as_list()[0]
+algorithms = db(db.algorithm.Name=='floating_point_add').select()
+dir(algorithms)
+dir(algorithms).first()
+algorithms.first()
+algorithms.as_list()
+algorithms.as_json()
+algorithms.as_dict
+algorithms.as_dict()
+algorithms.as_dict()['id']
+algorithms.as_dict()[0]['id']
+algorithms = db(db.algorithm.Name=='floating_point_add').select().id
+algorithms = db(db.algorithm.Name=='floating_point_add').select('id')
+algorithms
+algorithms()
+algorithms.as_list()
+algorithms.as_list()[0]
+algorithms.as_list()[0]['_extra']
+algorithms.as_list()[0]['_extra']['id]
+algorithms.as_list()[0]['_extra']['id']
+[algorithms.as_list()[0]['_extra']['id']]
+[db(db.algorithm.Name=='floating_point_add').select().id]
+algorithms = db(db.algorithm.Name=='floating_point_add').select().as_list()[0]['_extra']['id']
+algorithms = db(db.algorithm.Name=='floating_point_add').select('id').as_list()[0]['_extra']['id'].
+algorithms = db(db.algorithm.Name=='floating_point_add').select('id').as_list()[0]['_extra']['id']
+algorithms
+algorithms = [db(db.algorithm.Name=='floating_point_add').select('id').as_list()[0]['_extra']['id']]
+algorithms
+algorithms = [db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select('id').as_list()[0]['_extra']['id']]
+algorithms
+algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select('id')
+algorithms
+algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select()[0].id
+algorithms
+algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select().id
+algorithms = db.executesql('SELECT id FROM algorithm where Name == "merge_sort" OR Name == "bubble_sort";')
+algorithsm
+algorithms
+test = [x for (x, ) in algorithms]
+test
+admin_id = db.auth_user.insert(
+            username = 'admin',
+            password = db.auth_user.password.validate('admin')[0],
+            email = 'admin@admin.com',
+            first_name = 'admin',
+            last_name = 'admin'
+        )
+admin_id = db.auth_user.insert(
+            password = db.auth_user.password.validate('admin')[0],
+            email = 'admin@admin.com',
+            first_name = 'admin',
+            last_name = 'admin'
+        )
+admin_id
+admin_id = db.auth_user.insert(
+            password = db.auth_user.password.validate('admin')[0],
+            email = 'admin@admin.com',
+            first_name = 'admin',
+            last_name = 'admin'
+        )
+admin_id
+db.commit()

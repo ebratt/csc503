@@ -136,8 +136,8 @@ def run_parallel(p):
         if r == 0:
             other = comm.rank + size/2
             B = comm.recv(other)
-            l.debug(comm.rank,'receieved from',other,B)
-            l.info(comm.rank,'received from',other,B)
+            # l.debug(comm.rank,'receieved from',other,B)
+            # l.info(comm.rank,'received from',other,B)
             A = A+B
             z = len(A)
             merge(A,0,z/2,z)
@@ -149,6 +149,8 @@ def run_parallel(p):
     if comm.rank == 0:
         l.debug('****RUN_PARALLEL()****')
         l.info('****RUN_PARALLEL()****')
+        l.debug('# processes       : %d' % p)
+        l.info('# processes       : %d' % p)
         l.debug('input data       : %s' % input_data)
         l.info('input data       : %s' % input_data)
         l.debug('result           : %s' % A)
@@ -229,21 +231,21 @@ if __name__ == "__main__":
     bases.append(ti.timeit(stmt='run_parallel(2)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    data = [i for i in input_data]
-    # parallel with 4 processors
-    bases.append(ti.timeit(stmt='run_parallel(4)',
-                           setup='from __main__ import run_parallel',
-                           number=1))
-    data = [i for i in input_data]
-    # parallel with 8 processors
-    bases.append(ti.timeit(stmt='run_parallel(8)',
-                           setup='from __main__ import run_parallel',
-                           number=1))
-    data = [i for i in input_data]
-    # parallel with 16 processors
-    bases.append(ti.timeit(stmt='run_parallel(16)',
-                           setup='from __main__ import run_parallel',
-                           number=1))
+    # data = [i for i in input_data]
+    # # parallel with 4 processors
+    # bases.append(ti.timeit(stmt='run_parallel(4)',
+    #                        setup='from __main__ import run_parallel',
+    #                        number=1))
+    # data = [i for i in input_data]
+    # # parallel with 8 processors
+    # bases.append(ti.timeit(stmt='run_parallel(8)',
+    #                        setup='from __main__ import run_parallel',
+    #                        number=1))
+    # data = [i for i in input_data]
+    # # parallel with 16 processors
+    # bases.append(ti.timeit(stmt='run_parallel(16)',
+    #                        setup='from __main__ import run_parallel',
+    #                        number=1))
     plot_results()
 
     # Now we need to upload the log file and the plot png (POST) to the

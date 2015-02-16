@@ -31,11 +31,13 @@ What you should see in the monitoring dashboard:
 
     form = SQLFORM(db.simulation, fields=['algorithm', 'input_data'])
     simulation_id = None
-    algorithm_id = None
     algorithm = None
     if form.process(keepvalues=True).accepted:
         simulation_id = form.vars.id
-        algorithm_id = form.vars.algorithm
+        algorithm_id = int(form.vars.algorithm)
+        query = db(db.input_data.algorithms.contains(algorithm_id)).select()
+        valid_input = [item.id for item in query]
+        db.simulation.input_data.requires=IS_IN_SET(valid_input)
         algorithm = db(db.algorithm.id==algorithm_id).select()[0].Name
         response.flash = 'form accepted'
     elif form.errors:

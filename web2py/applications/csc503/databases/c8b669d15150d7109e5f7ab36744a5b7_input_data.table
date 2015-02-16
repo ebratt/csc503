@@ -22,25 +22,9 @@ sS'type'
 p10
 S'list:string'
 p11
-ssS'id'
+ssS'algorithms'
 p12
 (dp13
-g4
-I512
-sg5
-I00
-sg6
-I1
-sg7
-S'INTEGER PRIMARY KEY AUTOINCREMENT'
-p14
-sg9
-I00
-sg10
-g12
-ssS'algorithm'
-p15
-(dp16
 g4
 I512
 sg5
@@ -49,10 +33,26 @@ sg6
 I3
 sg7
 S'TEXT'
-p17
+p14
 sg9
 I00
 sg10
 S'list:reference algorithm'
+p15
+ssS'id'
+p16
+(dp17
+g4
+I512
+sg5
+I00
+sg6
+I1
+sg7
+S'INTEGER PRIMARY KEY AUTOINCREMENT'
 p18
+sg9
+I00
+sg10
+g16
 ss.

@@ -6,25 +6,11 @@ db.define_table('algorithm',
                 Field('Name', 'string'),
                 Field('Description', 'text'),
                 format='%(Name)s')
-# if the algorithm table is empty, populate it with data
-if db(db.algorithm).isempty():
-    desc =  "Example taken from section 2.2.5 of An Introduction to Parallel "
-    desc += "Programming Peter S. Pacheco University of San Francisco "
-    desc += "Pacheco, Peter (2011-02-17). An Introduction to Parallel Programming "
-    desc += "Elsevier Science. Kindle Edition."
-    db.algorithm.insert(Name='floating_point_add',
-                        Description=desc)
 
 db.define_table('input_data',
                 Field('input_value', 'list:string'),
-                Field('algorithm', 'list:reference algorithm'),
+                Field('algorithms', 'list:reference algorithm'),
                 format='%(input_value)s')
-# populate the table if it is empty
-if db(db.input_data).isempty():
-    random.seed(12345)
-    db.input_data.insert(input_value=random.randint(0, 1000000))
-    db.input_data.insert(input_value=[random.randint(0, 10) for r in xrange(10)])
-    db.input_data.insert(input_value=[chr(random.randint(97, 122)) for r in xrange(97, 122)])
 
 db.define_table('simulation',
                 Field('simulation_date', 'datetime', writable=False, default=datetime.datetime.today()),
@@ -44,3 +30,75 @@ db.define_table('simulation_plot',
                 Field('plot_content', 'upload'),
                 Field('plot_owner', 'reference auth_user', default=auth.user_id),
                 format='%(simulation)')
+
+
+def check_initialize():
+    if not db().select(db.auth_user.ALL).first():
+        admin_id = db.auth_user.insert(
+            password = db.auth_user.password.validate('admin')[0],
+            email = 'admin@admin.com',
+            first_name = 'admin',
+            last_name = 'admin'
+        )
+        db.commit()
+        api_id = db.auth_user.insert(
+            password = db.auth_user.password.validate('pass')[0],
+            email = 'api@api.com',
+            first_name = 'api',
+            last_name = 'api'
+        )
+        db.commit()
+    if not db().select(db.auth_group.ALL).first():
+        admin_group_id = db.auth_group.insert(role='admin',
+                             description='reserved for admins')
+        db.commit()
+        api_group_id = db.auth_group.insert(role='api',
+                             description='reserved for api calls')
+        db.commit()
+        db.auth_membership.insert(user_id = admin_id,
+                                  group_id = admin_group_id)
+        db.commit()
+        db.auth_membership.insert(user_id = api_id,
+                                  group_id = api_group_id)
+        db.commit()
+
+    # if the algorithm table is empty, populate it with data
+    if not db().select(db.algorithm.ALL).first():
+        desc =  "Example taken from section 2.2.5 of An Introduction to Parallel "
+        desc += "Programming Peter S. Pacheco University of San Francisco "
+        desc += "Pacheco, Peter (2011-02-17). An Introduction to Parallel Programming "
+        desc += "Elsevier Science. Kindle Edition."
+        db.algorithm.insert(Name='floating_point_add',
+                            Description=desc)
+        db.commit()
+        desc =  "Example taken from Massimo Di Pierro "
+        desc += "CSC503, DePaul University "
+        db.algorithm.insert(Name='merge_sort',
+                            Description=desc)
+        db.commit()
+        desc =  "Not yet implemented "
+        db.algorithm.insert(Name='bubble_sort',
+                            Description=desc)
+        db.commit()
+
+    # populate the table if it is empty
+    if db(db.input_data).isempty():
+        random.seed(12345)
+        input_value = random.randint(0, 1000000)
+        algorithms = db.executesql('SELECT id FROM algorithm where Name == "floating_point_add";')
+        algorithms = [x for (x, ) in algorithms]
+        db.input_data.insert(input_value=input_value, algorithms=algorithms)
+        db.commit()
+        input_value = [random.randint(0, 10) for r in xrange(10)]
+        algorithms = db.executesql('SELECT id FROM algorithm where Name == "merge_sort" OR Name == "bubble_sort";')
+        algorithms = [x for (x, ) in algorithms]
+        # algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select().id
+        db.input_data.insert(input_value=input_value, algorithms=algorithms)
+        db.commit()
+        input_value = [chr(random.randint(97, 122)) for r in xrange(97, 122)]
+        db.input_data.insert(input_value=input_value, algorithms=algorithms)
+        db.commit()
+
+
+# do initialization check
+cache.ram('db_initialized', lambda: check_initialize(), time_expire=None)
