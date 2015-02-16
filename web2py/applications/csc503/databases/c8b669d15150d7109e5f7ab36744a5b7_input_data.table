@@ -38,4 +38,21 @@ sg9
 I00
 sg10
 g12
+ssS'algorithm'
+p15
+(dp16
+g4
+I512
+sg5
+I00
+sg6
+I3
+sg7
+S'TEXT'
+p17
+sg9
+I00
+sg10
+S'list:reference algorithm'
+p18
 ss.

@@ -28,9 +28,7 @@ response.google_analytics_id = None
 if auth.is_logged_in():
     response.menu = [
         (T('Home'), False, URL('default', 'index'), []),
-        ('Tasks', False, None, [
-            ('Floating Point Add', False, URL('floating_point_add', 'index')),
-            ]),
+        (T('Simulation'), False, URL('simulation', 'index'), []),
         (T('Monitor'), False, URL('plugin_cs_monitor', 'index'), [])
     ]
     if auth.has_membership('admin'):

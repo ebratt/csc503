@@ -1,0 +1,16 @@
+2015-02-16 02:30:09,460 - INFO - merge_sort - ****SYSTEM INFORMATION****
+2015-02-16 02:30:09,460 - INFO - merge_sort - Python version    : 2.7.3
+2015-02-16 02:30:09,461 - INFO - merge_sort - compiler          : GCC 4.7.2
+2015-02-16 02:30:09,461 - INFO - merge_sort - system            : Linux
+2015-02-16 02:30:09,461 - INFO - merge_sort - release           : 3.2.0-4-686-pae
+2015-02-16 02:30:09,461 - INFO - merge_sort - machine           : i686
+2015-02-16 02:30:09,461 - INFO - merge_sort - cpu's             : 2
+2015-02-16 02:30:09,461 - INFO - merge_sort - interpreter       : 32bit
+2015-02-16 02:30:09,462 - INFO - merge_sort - node              : crunchbang
+2015-02-16 02:30:09,462 - INFO - merge_sort - platform          : Linux-3.2.0-4-686-pae-i686-with-debian-7.8
+2015-02-16 02:30:09,462 - INFO - merge_sort - main: START
+2015-02-16 02:30:09,464 - INFO - merge_sort - ****RUN_SERIAL()****
+2015-02-16 02:30:09,464 - INFO - merge_sort - data            : 0
+2015-02-16 02:30:09,805 - INFO - merge_sort - log_payload: {'log_owner': '1', 'simulation': 16}
+2015-02-16 02:30:09,806 - INFO - merge_sort - plot_payload: {'plot_owner': '1', 'simulation': 16}
+2015-02-16 02:30:09,806 - INFO - merge_sort - main: END

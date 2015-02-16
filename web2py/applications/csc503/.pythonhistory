@@ -195,3 +195,71 @@ auth.user
 from gluon import auth
 import auth
 exit
+db
+print db.executesql('SELECT input_value FROM input_data WHERE algorithm = 1')
+print db.executesql('SELECT input_value FROM input_data WHERE algorithm = 1', as_dict=True)
+print db.executesql('SELECT input_value FROM input_data WHERE algorithm = 1', as_dict=True).['input_value']
+print db.executesql('SELECT input_value FROM input_data WHERE algorithm = 1', as_dict=True).[0]
+print db.executesql('SELECT input_value FROM input_data WHERE algorithm = 1');
+print db.executesql('SELECT input_value FROM input_data WHERE algorithm = 1;')
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')[0]
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')[0].as_list()
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')[0].as_list
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')[0]
+print db.executesql('SELECT DISTINCT id FROM input_data WHERE algorithm = 1;')[0]
+print db.executesql('SELECT DISTINCT id FROM input_data WHERE algorithm = 1;')[0][0]
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')[0][0]
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')[0]
+print db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')
+list((x,y)) = db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')
+valid_inputs = db.executesql('SELECT id FROM input_data WHERE algorithm = 1;')
+valid_inputs
+for (x,y) in valid_inputs: print x
+typeof(valid_inputs)
+type(valid_inputs)
+type(valid_inputs)[0]
+for vi in valid_inputs: print type(vi)
+for vi in valid_inputs: print type(vi._1)
+[print x for (x,y) in valid_inputs]
+print x for (x,y) in valid_inputs
+for (x, y) in valid_inputs: print x
+for x in valid_inputs: print x
+for (x, )  in valid_inputs: print x
+[(x, ) for vi in vaid_inputs]
+dataset = valid_inputs
+valid_inputs = [(x, ) for d in dataset]
+valid_inputs
+for d in dataset: print d
+for (x, ) in dataset: print x
+valid_inputs = [x for (x, ) in dataset]
+valid_inputs
+algorithm = db(db.algorithm.id==1).select(db.algorithm.Name)
+algorithm
+algorithm['Name']
+algorithm[0]
+for a in algorithm: print a
+for a in algorithm: print a.as_list
+for a in algorithm: print a.as_list()
+algorithm
+algorithm.as_list()
+algorithm.as_dict()
+algorithm.as_dict
+algorithm
+algorithm = db(db.algorithm.id==algorithm_id)
+algorithm = db(db.algorithm.id==1)
+algorithm
+algorithm['Name']
+algorithm = db(db.algorithm.id==1).Name
+algorithm = db(db.algorithm.id==1).select(Name)
+algorithm = db(db.algorithm.id==1).select(db.algorithm.Name)[0]
+algorithm
+algorithm = db(db.algorithm.id==1).select(db.algorithm.Name)
+algorithm
+algorithm = db(db.algorithm.id==1).select().Name
+algorithm = db(db.algorithm.id==1).select()
+algorithm
+algorithm[0]
+algorithm[0].Name
+algorithm = db(db.algorithm.id==1).select()[0].Name
+algorithm

@@ -155,8 +155,11 @@ if __name__ == "__main__":
     if owner_id is None:
         raise Exception('no owner id!')
     session_id = sys.argv[4] or None
-    if owner_id is None:
+    if session_id is None:
         raise Exception('no session id!')
+    algorithm_name = sys.argv[5] or None
+    if algorithm_name is None:
+        raise Exception('no algorithm name!')
     # make the get calls
     import requests                                 # to call api
     from requests.auth import HTTPBasicAuth         # to authenticate
@@ -182,11 +185,11 @@ if __name__ == "__main__":
     logfile = str(simulation_id) + '_' + \
               str(owner_id) + '_' + \
               str(session_id) + '_' + \
-              'floating_point_add_example.log'
+              '%s.log' % algorithm_name
     pngfilename = str(simulation_id) + '_' + \
                   str(owner_id) + '_' + \
                   str(session_id) + '_' + \
-                  'floating_point_add_example.png'
+                  '%s.png' % algorithm_name
     logger = log.setup_custom_logger('root', logfile, logging.INFO)
     log_system_info()
     logger.debug('main: START')

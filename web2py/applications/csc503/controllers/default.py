@@ -4,18 +4,12 @@ from plugin_solidtable import SOLIDTABLE, OrderbySelector
 
 @auth.requires_login()
 def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
-
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
-    """
-
     # build the SOLIDTABLE
     orderby_selector = OrderbySelector([~db.simulation.simulation_date])
     # dataset = db(db.simulation.simulation_owner==auth.user)
-    dataset = db((db.simulation.id==db.simulation_log.simulation) & (db.simulation.id==db.simulation_plot.simulation) & (db.simulation.simulation_owner == auth.user))
+    dataset = db((db.simulation.id==db.simulation_log.simulation) &
+                 (db.simulation.id==db.simulation_plot.simulation) &
+                 (db.simulation.simulation_owner == auth.user))
     scope = TableScope(dataset, db.simulation.algorithm, renderstyle=True)
     rows = scope.scoped_dataset.select(db.simulation.simulation_date,
                                        db.simulation.algorithm,
