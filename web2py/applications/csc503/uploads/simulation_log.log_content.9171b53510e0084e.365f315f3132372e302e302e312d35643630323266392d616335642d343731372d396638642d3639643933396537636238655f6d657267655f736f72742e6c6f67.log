@@ -1,0 +1,24 @@
+2015-02-16 11:59:49,055 - INFO - merge_sort - ****SYSTEM INFORMATION****
+2015-02-16 11:59:49,055 - INFO - merge_sort - Python version    : 2.7.3
+2015-02-16 11:59:49,055 - INFO - merge_sort - compiler          : GCC 4.7.2
+2015-02-16 11:59:49,055 - INFO - merge_sort - system            : Linux
+2015-02-16 11:59:49,055 - INFO - merge_sort - release           : 3.2.0-4-686-pae
+2015-02-16 11:59:49,056 - INFO - merge_sort - machine           : i686
+2015-02-16 11:59:49,056 - INFO - merge_sort - cpu's             : 2
+2015-02-16 11:59:49,056 - INFO - merge_sort - interpreter       : 32bit
+2015-02-16 11:59:49,056 - INFO - merge_sort - node              : crunchbang
+2015-02-16 11:59:49,056 - INFO - merge_sort - platform          : Linux-3.2.0-4-686-pae-i686-with-debian-7.8
+2015-02-16 11:59:49,056 - INFO - merge_sort - main: START
+2015-02-16 11:59:49,059 - INFO - merge_sort - ****RUN_SERIAL()****
+2015-02-16 11:59:49,059 - INFO - merge_sort - input data       : [0, 9, 3, 4, 2, 6, 1, 1, 4, 6, 11, 142, 0, 6465, 74376, 879986]
+2015-02-16 11:59:49,059 - INFO - merge_sort - my data       : [0, 9, 3, 4, 2, 6, 1, 1, 4, 6, 11, 142, 0, 6465, 74376, 879986]
+2015-02-16 11:59:49,059 - INFO - merge_sort - result            : [0, 0, 1, 1, 2, 3, 4, 4, 6, 6, 9, 11, 142, 6465, 74376, 879986]
+2015-02-16 11:59:49,060 - INFO - psim - pid for 0 is 9047
+2015-02-16 11:59:49,060 - INFO - psim - pid for 1 is 9057
+2015-02-16 11:59:49,086 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 11:59:49,087 - INFO - merge_sort - # processes       : 2
+2015-02-16 11:59:49,087 - INFO - merge_sort - input data       : [0, 9, 3, 4, 2, 6, 1, 1, 4, 6, 11, 142, 0, 6465, 74376, 879986]
+2015-02-16 11:59:49,087 - INFO - merge_sort - result           : [0, 0, 1, 1, 2, 3, 4, 4, 6, 6, 9, 11, 142, 6465, 74376, 879986]
+2015-02-16 11:59:49,578 - INFO - merge_sort - log_payload: {'log_owner': '1', 'simulation': 6}
+2015-02-16 11:59:49,578 - INFO - merge_sort - plot_payload: {'plot_owner': '1', 'simulation': 6}
+2015-02-16 11:59:49,578 - INFO - merge_sort - main: END

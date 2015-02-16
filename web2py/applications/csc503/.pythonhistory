@@ -342,3 +342,9 @@ admin_id = db.auth_user.insert(
         )
 admin_id
 db.commit()
+algorithm_id = 1L
+query = db(db.input_data.algorithms.contains(algorithm_id)).select()
+query
+[item for item in query]
+[item.id for item in query]
+pip install nlib

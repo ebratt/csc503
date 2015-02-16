@@ -64,20 +64,24 @@ def check_initialize():
 
     # if the algorithm table is empty, populate it with data
     if not db().select(db.algorithm.ALL).first():
-        desc =  "Example taken from section 2.2.5 of An Introduction to Parallel "
+        desc = "Example taken from section 2.2.5 of An Introduction to Parallel "
         desc += "Programming Peter S. Pacheco University of San Francisco "
         desc += "Pacheco, Peter (2011-02-17). An Introduction to Parallel Programming "
         desc += "Elsevier Science. Kindle Edition."
         db.algorithm.insert(Name='floating_point_add',
                             Description=desc)
         db.commit()
-        desc =  "Example taken from Massimo Di Pierro "
+        desc = "Example taken from Massimo Di Pierro "
         desc += "CSC503, DePaul University "
         db.algorithm.insert(Name='merge_sort',
                             Description=desc)
         db.commit()
-        desc =  "Not yet implemented "
+        desc = "Not yet implemented "
         db.algorithm.insert(Name='bubble_sort',
+                            Description=desc)
+        db.commit()
+        desc = "Not yet implemented "
+        db.algorithm.insert(Name='differential_equation',
                             Description=desc)
         db.commit()
 
@@ -89,7 +93,7 @@ def check_initialize():
         algorithms = [x for (x, ) in algorithms]
         db.input_data.insert(input_value=input_value, algorithms=algorithms)
         db.commit()
-        input_value = [random.randint(0, 10) for r in xrange(10)]
+        input_value = [random.randint(0, 15) for r in xrange(15)]
         algorithms = db.executesql('SELECT id FROM algorithm where Name == "merge_sort" OR Name == "bubble_sort";')
         algorithms = [x for (x, ) in algorithms]
         # algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select().id
@@ -98,6 +102,13 @@ def check_initialize():
         input_value = [chr(random.randint(97, 122)) for r in xrange(97, 122)]
         db.input_data.insert(input_value=input_value, algorithms=algorithms)
         db.commit()
+        algorithms = db.executesql('SELECT id FROM algorithm where Name == "differential_equation";')
+        algorithms = [x for (x, ) in algorithms]
+        for i in xrange(1,10):
+            input_value = [i]
+            db.input_data.insert(input_value=input_value, algorithms=algorithms)
+            db.commit()
+
 
 
 # do initialization check

@@ -4,58 +4,23 @@ Created by Eric Bratt, 2015
 Example taken from Massimo Di Pierro, DePaul University
 """
 
-
-import platform
-import multiprocessing as mp
 import logging
 import timeit as ti
+import signal
+from math import log as log2
+import sys
 
 from matplotlib import pyplot as plt
 import numpy as np
 
 from psim import *
-from math import log as log2
 import log
 
-import sys
 
 input_data = None
 data = None
 topology = SWITCH
 bases = []
-
-def log_system_info():
-    l = logging.getLogger('root')
-    header = '****SYSTEM INFORMATION****'
-    python_version = 'Python version    : %s' % platform.python_version()
-    compiler = 'compiler          : %s' % platform.python_compiler()
-    system = 'system            : %s' % platform.system()
-    release = 'release           : %s' % platform.release()
-    machine = 'machine           : %s' % platform.machine()
-    cpus = "cpu's             : %s" % mp.cpu_count()
-    interpreter = 'interpreter       : %s' % platform.architecture()[0]
-    node = 'node              : %s' % platform.node()
-    plat = 'platform          : %s' % platform.platform()
-    l.debug(header)
-    l.debug(python_version)
-    l.debug(compiler)
-    l.debug(system)
-    l.debug(release)
-    l.debug(machine)
-    l.debug(cpus)
-    l.debug(interpreter)
-    l.debug(node)
-    l.debug(plat)
-    l.info(header)
-    l.info(python_version)
-    l.info(compiler)
-    l.info(system)
-    l.info(release)
-    l.info(machine)
-    l.info(cpus)
-    l.info(interpreter)
-    l.info(node)
-    l.info(plat)
 
 
 def plot_results():
@@ -85,7 +50,7 @@ def plot_results():
     fig.savefig(pngfilename)
 
 
-def merge(A,i,j,n):
+def merge(A, i, j, n):
     (a,b,c) = (i,j,n)
     B = []
     while i<b or j<c:
@@ -109,7 +74,6 @@ def mergesort(A):
     n = len(A)
     size = 2
     while size<=n:
-        print 'size:', size
         for k in range(0,n,size):
             merge(A,k,k+size/2,k+size)
         size = size*2
@@ -125,8 +89,8 @@ def run_parallel(p):
     x = log2(n/p,2)
     assert int(x)==x
 
-    l.debug(comm.rank,'scattering to all',A)
-    l.info(comm.rank,'scattering to all',A)
+    l.debug('%d scattering to all %s'% (comm.rank, A))
+    l.info('%d scattering to all %s'% (comm.rank, A))
     A = comm.one2all_scatter(source,A)
     mergesort(A)
 
@@ -155,6 +119,8 @@ def run_parallel(p):
         l.info('input data       : %s' % input_data)
         l.debug('result           : %s' % A)
         l.info('result           : %s' % A)
+    else:
+        os.kill(comm.pid, signal.SIGTERM)
 
 def run_serial():
     l = logging.getLogger('root')
@@ -218,7 +184,7 @@ if __name__ == "__main__":
                   str(session_id) + '_' + \
                   '%s.png' % algorithm_name
     logger = log.setup_custom_logger('root', logfile, logging.INFO)
-    log_system_info()
+    log.log_system_info()
     logger.debug('main: START')
     logger.info('main: START')
     # serial
@@ -231,21 +197,21 @@ if __name__ == "__main__":
     bases.append(ti.timeit(stmt='run_parallel(2)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    # data = [i for i in input_data]
-    # # parallel with 4 processors
-    # bases.append(ti.timeit(stmt='run_parallel(4)',
-    #                        setup='from __main__ import run_parallel',
-    #                        number=1))
-    # data = [i for i in input_data]
-    # # parallel with 8 processors
-    # bases.append(ti.timeit(stmt='run_parallel(8)',
-    #                        setup='from __main__ import run_parallel',
-    #                        number=1))
-    # data = [i for i in input_data]
-    # # parallel with 16 processors
-    # bases.append(ti.timeit(stmt='run_parallel(16)',
-    #                        setup='from __main__ import run_parallel',
-    #                        number=1))
+    data = [i for i in input_data]
+    # parallel with 4 processors
+    bases.append(ti.timeit(stmt='run_parallel(4)',
+                           setup='from __main__ import run_parallel',
+                           number=1))
+    data = [i for i in input_data]
+    # parallel with 8 processors
+    bases.append(ti.timeit(stmt='run_parallel(8)',
+                           setup='from __main__ import run_parallel',
+                           number=1))
+    data = [i for i in input_data]
+    # parallel with 16 processors
+    bases.append(ti.timeit(stmt='run_parallel(16)',
+                           setup='from __main__ import run_parallel',
+                           number=1))
     plot_results()
 
     # Now we need to upload the log file and the plot png (POST) to the

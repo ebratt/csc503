@@ -1,0 +1,31 @@
+2015-02-16 12:07:40,698 - INFO - merge_sort - ****SYSTEM INFORMATION****
+2015-02-16 12:07:40,699 - INFO - merge_sort - Python version    : 2.7.3
+2015-02-16 12:07:40,699 - INFO - merge_sort - compiler          : GCC 4.7.2
+2015-02-16 12:07:40,699 - INFO - merge_sort - system            : Linux
+2015-02-16 12:07:40,699 - INFO - merge_sort - release           : 3.2.0-4-686-pae
+2015-02-16 12:07:40,699 - INFO - merge_sort - machine           : i686
+2015-02-16 12:07:40,699 - INFO - merge_sort - cpu's             : 2
+2015-02-16 12:07:40,699 - INFO - merge_sort - interpreter       : 32bit
+2015-02-16 12:07:40,699 - INFO - merge_sort - node              : crunchbang
+2015-02-16 12:07:40,699 - INFO - merge_sort - platform          : Linux-3.2.0-4-686-pae-i686-with-debian-7.8
+2015-02-16 12:07:40,700 - INFO - merge_sort - main: START
+2015-02-16 12:07:40,702 - INFO - merge_sort - ****RUN_SERIAL()****
+2015-02-16 12:07:40,702 - INFO - merge_sort - input data       : [0, 9, 3, 4, 2, 6, 1, 1, 4, 6, 11, 142, 0, 6465, 74376, 879986]
+2015-02-16 12:07:40,702 - INFO - merge_sort - result            : [0, 0, 1, 1, 2, 3, 4, 4, 6, 6, 9, 11, 142, 6465, 74376, 879986]
+2015-02-16 12:07:40,703 - INFO - psim - pid for 0 is 9720
+2015-02-16 12:07:40,704 - INFO - psim - pid for 1 is 9730
+2015-02-16 12:07:40,705 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 12:07:40,706 - INFO - merge_sort - # processes       : 2
+2015-02-16 12:07:40,706 - INFO - merge_sort - input data       : [0, 9, 3, 4, 2, 6, 1, 1, 4, 6, 11, 142, 0, 6465, 74376, 879986]
+2015-02-16 12:07:40,706 - INFO - merge_sort - result           : [0, 0, 1, 1, 2, 3, 4, 4, 6, 6, 9, 11, 142, 6465, 74376, 879986]
+2015-02-16 12:07:40,708 - INFO - psim - pid for 1 is 9731
+2015-02-16 12:07:40,708 - INFO - psim - pid for 0 is 9720
+2015-02-16 12:07:40,709 - INFO - psim - pid for 2 is 9732
+2015-02-16 12:07:40,711 - INFO - psim - pid for 3 is 9733
+2015-02-16 12:07:40,713 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 12:07:40,713 - INFO - merge_sort - # processes       : 4
+2015-02-16 12:07:40,714 - INFO - merge_sort - input data       : [0, 9, 3, 4, 2, 6, 1, 1, 4, 6, 11, 142, 0, 6465, 74376, 879986]
+2015-02-16 12:07:40,714 - INFO - merge_sort - result           : [0, 0, 1, 1, 2, 3, 4, 4, 6, 6, 9, 11, 142, 6465, 74376, 879986]
+2015-02-16 12:07:41,077 - INFO - merge_sort - log_payload: {'log_owner': '1', 'simulation': 9}
+2015-02-16 12:07:41,078 - INFO - merge_sort - plot_payload: {'plot_owner': '1', 'simulation': 9}
+2015-02-16 12:07:41,078 - INFO - merge_sort - main: END

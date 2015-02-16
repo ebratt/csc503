@@ -6,7 +6,7 @@ def worker1():
     algorithm = request.args(1)
     session_id = response.session_id
     scheduler.queue_task(simulation,
-                         task_name='floating_point_add',
+                         task_name=algorithm,
                          pargs=[simulation_id,
                                 str(auth.user.id),
                                 str(session_id),
