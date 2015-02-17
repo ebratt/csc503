@@ -1,4 +1,4 @@
-timestamp: 2015-02-16T11:34:41.807947
+timestamp: 2015-02-16T18:30:13.536498
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -10,21 +10,21 @@ CREATE TABLE auth_user(
     registration_id CHAR(512)
 );
 success!
-timestamp: 2015-02-16T11:34:41.826542
+timestamp: 2015-02-16T18:30:13.577045
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-02-16T11:34:41.833093
+timestamp: 2015-02-16T18:30:13.587136
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2015-02-16T11:34:41.848390
+timestamp: 2015-02-16T18:30:13.614897
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
@@ -33,7 +33,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2015-02-16T11:34:41.855520
+timestamp: 2015-02-16T18:30:13.644175
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +43,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2015-02-16T11:34:41.863427
+timestamp: 2015-02-16T18:30:13.662040
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
@@ -53,21 +53,22 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2015-02-16T11:34:41.886527
+timestamp: 2015-02-16T18:30:13.694155
 CREATE TABLE algorithm(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     Name CHAR(512),
     Description TEXT
 );
 success!
-timestamp: 2015-02-16T11:34:41.916202
+timestamp: 2015-02-16T18:30:13.702354
 CREATE TABLE input_data(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     input_value TEXT,
-    algorithms TEXT
+    algorithms TEXT,
+    description CHAR(512)
 );
 success!
-timestamp: 2015-02-16T11:34:41.924112
+timestamp: 2015-02-16T18:30:13.709721
 CREATE TABLE simulation(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     simulation_date TIMESTAMP,
@@ -76,7 +77,7 @@ CREATE TABLE simulation(
     simulation_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2015-02-16T11:34:41.939904
+timestamp: 2015-02-16T18:30:13.752978
 CREATE TABLE simulation_log(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     simulation INTEGER REFERENCES simulation (id) ON DELETE CASCADE,
@@ -84,67 +85,23 @@ CREATE TABLE simulation_log(
     log_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2015-02-16T11:34:41.948741
-CREATE TABLE simulation_plot(
+timestamp: 2015-02-16T18:30:13.783334
+CREATE TABLE simulation_time_plot(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     simulation INTEGER REFERENCES simulation (id) ON DELETE CASCADE,
     plot_content CHAR(512),
     plot_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2015-02-16T11:34:42.018862
-CREATE TABLE scheduler_task(
+timestamp: 2015-02-16T18:30:13.810101
+CREATE TABLE simulation_upload(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    application_name CHAR(512),
-    task_name CHAR(512),
-    group_name CHAR(512),
-    status CHAR(512),
-    function_name CHAR(512),
-    uuid CHAR(255) UNIQUE,
-    args TEXT,
-    vars TEXT,
-    enabled CHAR(1),
-    start_time TIMESTAMP,
-    next_run_time TIMESTAMP,
-    stop_time TIMESTAMP,
-    repeats INTEGER,
-    retry_failed INTEGER,
-    period INTEGER,
-    prevent_drift CHAR(1),
-    timeout INTEGER,
-    sync_output INTEGER,
-    times_run INTEGER,
-    times_failed INTEGER,
-    last_run_time TIMESTAMP,
-    assigned_worker_name CHAR(512)
+    simulation INTEGER REFERENCES simulation (id) ON DELETE CASCADE,
+    upload_content CHAR(512),
+    upload_owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
-timestamp: 2015-02-16T11:34:51.380083
-CREATE TABLE scheduler_task(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    application_name CHAR(512),
-    task_name CHAR(512),
-    group_name CHAR(512),
-    status CHAR(512),
-    function_name CHAR(512),
-    uuid CHAR(255) UNIQUE,
-    args TEXT,
-    vars TEXT,
-    enabled CHAR(1),
-    start_time TIMESTAMP,
-    next_run_time TIMESTAMP,
-    stop_time TIMESTAMP,
-    repeats INTEGER,
-    retry_failed INTEGER,
-    period INTEGER,
-    prevent_drift CHAR(1),
-    timeout INTEGER,
-    sync_output INTEGER,
-    times_run INTEGER,
-    times_failed INTEGER,
-    last_run_time TIMESTAMP,
-    assigned_worker_name CHAR(512)
-);
-timestamp: 2015-02-16T11:35:03.735317
+success!
+timestamp: 2015-02-16T18:30:14.709255
 CREATE TABLE scheduler_task(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     application_name CHAR(512),
@@ -171,7 +128,7 @@ CREATE TABLE scheduler_task(
     assigned_worker_name CHAR(512)
 );
 success!
-timestamp: 2015-02-16T11:35:03.746804
+timestamp: 2015-02-16T18:30:14.750098
 CREATE TABLE scheduler_run(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER REFERENCES scheduler_task (id) ON DELETE CASCADE,
@@ -184,7 +141,7 @@ CREATE TABLE scheduler_run(
     worker_name CHAR(512)
 );
 success!
-timestamp: 2015-02-16T11:35:03.758060
+timestamp: 2015-02-16T18:30:14.772797
 CREATE TABLE scheduler_worker(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     worker_name CHAR(255) UNIQUE,
@@ -196,7 +153,7 @@ CREATE TABLE scheduler_worker(
     worker_stats TEXT
 );
 success!
-timestamp: 2015-02-16T11:35:03.766846
+timestamp: 2015-02-16T18:30:14.794579
 CREATE TABLE scheduler_task_deps(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     job_name CHAR(512),

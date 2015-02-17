@@ -348,3 +348,23 @@ query
 [item for item in query]
 [item.id for item in query]
 pip install nlib
+db.algorithm.insert(Name='differential_equation',
+                            Description=desc)
+desc =  "Not yet implemented "
+        db.algorithm.insert(Name='differential_equation',
+                            Description=desc)
+desc = "Not yet implemented "
+db.algorithm.insert(Name='differential_equation',
+                            Description=desc)
+db.commit()
+algorithms = db.executesql('SELECT id FROM algorithm where Name == "differential_equation";')
+algorithms = [x for (x, ) in algorithms]
+algorithms
+for i in xrange(1,10):
+            input_value = [i]
+            db.input_data.insert(input_value=input_value, algorithms=algorithms)
+            db.commit()
+dataset = db((db.simulation.id==db.simulation_log.simulation) &
+                 (db.simulation.id==db.simulation_time_plot.simulation) &
+                 (db.simulation.id==db.simulation_upload.simulation) &
+                 (db.simulation.simulation_owner == auth.user))

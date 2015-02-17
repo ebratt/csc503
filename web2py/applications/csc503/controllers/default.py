@@ -8,14 +8,16 @@ def index():
     orderby_selector = OrderbySelector([~db.simulation.simulation_date])
     # dataset = db(db.simulation.simulation_owner==auth.user)
     dataset = db((db.simulation.id==db.simulation_log.simulation) &
-                 (db.simulation.id==db.simulation_plot.simulation) &
+                 (db.simulation.id==db.simulation_time_plot.simulation) &
+                 (db.simulation.id==db.simulation_upload.simulation) &
                  (db.simulation.simulation_owner == auth.user))
     scope = TableScope(dataset, db.simulation.algorithm, renderstyle=True)
     rows = scope.scoped_dataset.select(db.simulation.simulation_date,
                                        db.simulation.algorithm,
                                        db.simulation.input_data,
                                        db.simulation_log.log_content,
-                                       db.simulation_plot.plot_content,
+                                       db.simulation_time_plot.plot_content,
+                                       db.simulation_upload.upload_content,
                                        orderby=orderby_selector.orderby())
     headers = {'simulation.simulation_date': {'selected': True},
                'simulation.algorithm': {'selected': False},
@@ -23,8 +25,10 @@ def index():
     }
     extracolumns = [{'label': A('Log', _href='#'),
                      'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_log.log_content)},
-                    {'label': A('Plot', _href='#'),
-                     'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_plot.plot_content)},
+                    {'label': A('Run-Time Plot', _href='#'),
+                     'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_time_plot.plot_content)},
+                    {'label': A('Other Upload', _href='#'),
+                     'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_upload.upload_content)},
                     ]
     columns = [db.simulation.simulation_date,
                db.simulation.algorithm,

@@ -1,0 +1,13 @@
+2015-02-16 18:18:48,218 - INFO - log - ****SYSTEM INFORMATION****
+2015-02-16 18:18:48,218 - INFO - log - Python version    : 2.7.3
+2015-02-16 18:18:48,219 - INFO - log - compiler          : GCC 4.7.2
+2015-02-16 18:18:48,219 - INFO - log - system            : Linux
+2015-02-16 18:18:48,219 - INFO - log - release           : 3.2.0-4-686-pae
+2015-02-16 18:18:48,219 - INFO - log - machine           : i686
+2015-02-16 18:18:48,219 - INFO - log - cpu's             : 2
+2015-02-16 18:18:48,220 - INFO - log - interpreter       : 32bit
+2015-02-16 18:18:48,220 - INFO - log - node              : crunchbang
+2015-02-16 18:18:48,220 - INFO - log - platform          : Linux-3.2.0-4-686-pae-i686-with-debian-7.8
+2015-02-16 18:18:48,220 - INFO - merge_sort - main: START
+2015-02-16 18:18:48,223 - INFO - merge_sort - ****RUN_SERIAL()****
+2015-02-16 18:18:48,223 - INFO - merge_sort - input data       : ['k', 'n', 'd', 's', 'e', 'i', 'a', 'i', 'z', 'z', 't', 'a', 'y', 'w', 'u', 'e', 'c', 'k', 'x', 'p', 't', 'g', 'n', 's', 'v']

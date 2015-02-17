@@ -173,7 +173,11 @@ if __name__ == "__main__":
         input_data = input_json['content'][0]['input_value']
         input_data = [int(a) for a in input_data]
     except:
-        raise Exception('invalid input data')
+        try:
+            input_data = [a.encode('ascii', 'ignore') for a in input_data]
+        except:
+            print 'input_data:', input_data
+            raise Exception('invalid input data')
 
     logfile = str(simulation_id) + '_' + \
               str(owner_id) + '_' + \
@@ -215,12 +219,14 @@ if __name__ == "__main__":
     plot_results()
 
     # Now we need to upload the log file and the plot png (POST) to the
-    # simulation_log.log_content and simulation_plot.plot_content,
+    # simulation_log.log_content and simulation_time_plot.plot_content,
     # respectively.
     log_files = {'log_content': open(logfile, 'rb')}
     plot_files = {'plot_content': open(pngfilename, 'rb')}
+    upload_files = {'upload_content': open(pngfilename, 'rb')}
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
+    upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
     logger.debug('log_payload: %s' % log_payload)
     logger.debug('plot_payload: %s' % plot_payload)
     logger.info('log_payload: %s' % log_payload)
@@ -228,7 +234,8 @@ if __name__ == "__main__":
     logger.debug('main: END')
     logger.info('main: END')
     log_r = requests.post(api_url + '/simulation_log/', data=log_payload, files=log_files, auth=auth)
-    plot_r = requests.post(api_url + '/simulation_plot/', data=plot_payload, files=plot_files, auth=auth)
+    plot_r = requests.post(api_url + '/simulation_time_plot/', data=plot_payload, files=plot_files, auth=auth)
+    upload_r = requests.post(api_url + '/simulation_upload/', data=upload_payload, files=upload_files, auth=auth)
     os.remove(logfile)
     os.remove(pngfilename)
 

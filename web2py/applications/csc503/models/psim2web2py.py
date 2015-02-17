@@ -10,7 +10,8 @@ db.define_table('algorithm',
 db.define_table('input_data',
                 Field('input_value', 'list:string'),
                 Field('algorithms', 'list:reference algorithm'),
-                format='%(input_value)s')
+                Field('description', 'string'),
+                format='%(input_value)s-%(description)s')
 
 db.define_table('simulation',
                 Field('simulation_date', 'datetime', writable=False, default=datetime.datetime.today()),
@@ -25,10 +26,16 @@ db.define_table('simulation_log',
                 Field('log_owner', 'reference auth_user', default=auth.user_id),
                 format='%(simulation)')
 
-db.define_table('simulation_plot',
+db.define_table('simulation_time_plot',
                 Field('simulation', 'reference simulation'),
                 Field('plot_content', 'upload'),
                 Field('plot_owner', 'reference auth_user', default=auth.user_id),
+                format='%(simulation)')
+
+db.define_table('simulation_upload',
+                Field('simulation', 'reference simulation'),
+                Field('upload_content', 'upload'),
+                Field('upload_owner', 'reference auth_user', default=auth.user_id),
                 format='%(simulation)')
 
 
@@ -93,20 +100,22 @@ def check_initialize():
         algorithms = [x for (x, ) in algorithms]
         db.input_data.insert(input_value=input_value, algorithms=algorithms)
         db.commit()
-        input_value = [random.randint(0, 15) for r in xrange(15)]
+        input_value = [random.randint(0, 16) for r in xrange(16)]
         algorithms = db.executesql('SELECT id FROM algorithm where Name == "merge_sort" OR Name == "bubble_sort";')
         algorithms = [x for (x, ) in algorithms]
         # algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select().id
         db.input_data.insert(input_value=input_value, algorithms=algorithms)
         db.commit()
-        input_value = [chr(random.randint(97, 122)) for r in xrange(97, 122)]
+        input_value = [chr(random.randint(97, 122)) for r in xrange(97, 123)] + \
+                      [chr(random.randint(97, 103)) for r in xrange(97, 103)]
         db.input_data.insert(input_value=input_value, algorithms=algorithms)
         db.commit()
         algorithms = db.executesql('SELECT id FROM algorithm where Name == "differential_equation";')
         algorithms = [x for (x, ) in algorithms]
-        for i in xrange(1,10):
+        description = 'Number of derivative steps'
+        for i in xrange(1, 50):
             input_value = [i]
-            db.input_data.insert(input_value=input_value, algorithms=algorithms)
+            db.input_data.insert(input_value=input_value, algorithms=algorithms, description=description)
             db.commit()
 
 

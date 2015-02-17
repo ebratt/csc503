@@ -1,0 +1,87 @@
+2015-02-16 17:11:51,899 - INFO - log - ****SYSTEM INFORMATION****
+2015-02-16 17:11:51,900 - INFO - log - Python version    : 2.7.3
+2015-02-16 17:11:51,900 - INFO - log - compiler          : GCC 4.7.2
+2015-02-16 17:11:51,900 - INFO - log - system            : Linux
+2015-02-16 17:11:51,900 - INFO - log - release           : 3.2.0-4-686-pae
+2015-02-16 17:11:51,900 - INFO - log - machine           : i686
+2015-02-16 17:11:51,901 - INFO - log - cpu's             : 2
+2015-02-16 17:11:51,901 - INFO - log - interpreter       : 32bit
+2015-02-16 17:11:51,901 - INFO - log - node              : crunchbang
+2015-02-16 17:11:51,901 - INFO - log - platform          : Linux-3.2.0-4-686-pae-i686-with-debian-7.8
+2015-02-16 17:11:51,901 - INFO - merge_sort - main: START
+2015-02-16 17:11:51,903 - INFO - merge_sort - ****RUN_SERIAL()****
+2015-02-16 17:11:51,903 - INFO - merge_sort - input data       : [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,903 - INFO - merge_sort - result            : [0, 1, 2, 2, 2, 3, 5, 6, 6, 7, 9, 9, 9, 14, 16, 16]
+2015-02-16 17:11:51,905 - INFO - psim - pid for 0 is 18829
+2015-02-16 17:11:51,905 - INFO - psim - pid for 1 is 18839
+2015-02-16 17:11:51,905 - INFO - merge_sort - 0 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,906 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 17:11:51,906 - INFO - merge_sort - # processes       : 2
+2015-02-16 17:11:51,906 - INFO - merge_sort - input data       : [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,906 - INFO - merge_sort - result           : [0, 1, 2, 2, 2, 3, 5, 6, 6, 7, 9, 9, 9, 14, 16, 16]
+2015-02-16 17:11:51,909 - INFO - psim - pid for 0 is 18829
+2015-02-16 17:11:51,910 - INFO - merge_sort - 1 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,912 - INFO - psim - pid for 3 is 18842
+2015-02-16 17:11:51,913 - INFO - merge_sort - 2 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,914 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 17:11:51,915 - INFO - merge_sort - # processes       : 4
+2015-02-16 17:11:51,915 - INFO - merge_sort - input data       : [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,915 - INFO - merge_sort - result           : [0, 1, 2, 2, 2, 3, 5, 6, 6, 7, 9, 9, 9, 14, 16, 16]
+2015-02-16 17:11:51,917 - INFO - psim - pid for 1 is 18843
+2015-02-16 17:11:51,917 - INFO - merge_sort - 1 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,918 - INFO - psim - pid for 2 is 18844
+2015-02-16 17:11:51,919 - INFO - merge_sort - 2 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,919 - INFO - psim - pid for 0 is 18829
+2015-02-16 17:11:51,920 - INFO - psim - pid for 3 is 18845
+2015-02-16 17:11:51,920 - INFO - merge_sort - 0 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,920 - INFO - merge_sort - 3 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,921 - INFO - psim - pid for 5 is 18847
+2015-02-16 17:11:51,922 - INFO - merge_sort - 5 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,924 - INFO - psim - pid for 6 is 18848
+2015-02-16 17:11:51,925 - INFO - merge_sort - 4 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,925 - INFO - merge_sort - 6 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,926 - INFO - psim - pid for 7 is 18849
+2015-02-16 17:11:51,926 - INFO - merge_sort - 7 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,929 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 17:11:51,929 - INFO - merge_sort - # processes       : 8
+2015-02-16 17:11:51,929 - INFO - merge_sort - input data       : [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,929 - INFO - merge_sort - result           : [0, 1, 2, 2, 2, 3, 5, 6, 6, 7, 9, 9, 9, 14, 16, 16]
+2015-02-16 17:11:51,933 - INFO - psim - pid for 1 is 18850
+2015-02-16 17:11:51,934 - INFO - merge_sort - 1 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,935 - INFO - psim - pid for 2 is 18851
+2015-02-16 17:11:51,935 - INFO - merge_sort - 2 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,936 - INFO - psim - pid for 4 is 18853
+2015-02-16 17:11:51,936 - INFO - merge_sort - 4 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,937 - INFO - psim - pid for 5 is 18854
+2015-02-16 17:11:51,938 - INFO - merge_sort - 5 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,939 - INFO - psim - pid for 7 is 18856
+2015-02-16 17:11:51,940 - INFO - merge_sort - 7 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,941 - INFO - psim - pid for 8 is 18857
+2015-02-16 17:11:51,941 - INFO - merge_sort - 8 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,942 - INFO - psim - pid for 9 is 18858
+2015-02-16 17:11:51,943 - INFO - merge_sort - 9 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,943 - INFO - psim - pid for 0 is 18829
+2015-02-16 17:11:51,944 - INFO - psim - pid for 6 is 18855
+2015-02-16 17:11:51,945 - INFO - merge_sort - 6 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,945 - INFO - psim - pid for 12 is 18861
+2015-02-16 17:11:51,945 - INFO - merge_sort - 12 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,946 - INFO - psim - pid for 3 is 18852
+2015-02-16 17:11:51,946 - INFO - merge_sort - 3 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,946 - INFO - psim - pid for 14 is 18863
+2015-02-16 17:11:51,947 - INFO - merge_sort - 14 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,944 - INFO - psim - pid for 11 is 18860
+2015-02-16 17:11:51,947 - INFO - merge_sort - 11 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,948 - INFO - psim - pid for 10 is 18859
+2015-02-16 17:11:51,948 - INFO - merge_sort - 10 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,948 - INFO - psim - pid for 15 is 18864
+2015-02-16 17:11:51,943 - INFO - merge_sort - 0 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,949 - INFO - merge_sort - 15 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,948 - INFO - psim - pid for 13 is 18862
+2015-02-16 17:11:51,950 - INFO - merge_sort - 13 scattering to all [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,969 - INFO - merge_sort - ****RUN_PARALLEL()****
+2015-02-16 17:11:51,970 - INFO - merge_sort - # processes       : 16
+2015-02-16 17:11:51,970 - INFO - merge_sort - input data       : [0, 14, 5, 6, 3, 9, 2, 2, 7, 9, 2, 9, 6, 16, 1, 16]
+2015-02-16 17:11:51,970 - INFO - merge_sort - result           : [0, 1, 2, 2, 2, 3, 5, 6, 6, 7, 9, 9, 9, 14, 16, 16]
+2015-02-16 17:11:52,333 - INFO - merge_sort - log_payload: {'log_owner': '1', 'simulation': 1}
+2015-02-16 17:11:52,333 - INFO - merge_sort - plot_payload: {'plot_owner': '1', 'simulation': 1}
+2015-02-16 17:11:52,334 - INFO - merge_sort - main: END

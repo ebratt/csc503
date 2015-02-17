@@ -7,9 +7,9 @@ Example taken from Massimo Di Pierro, DePaul University
 import logging
 import timeit as ti
 import signal
-from math import log as log2
 import sys
 from nlib import *
+from random import random
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -19,24 +19,23 @@ import log
 
 
 input_data = None
-data = None
 topology = SWITCH
 bases = []
 
 # input domain
-a = 0.0  # time zero
-b = 1.0  # time 1 second
+a = None  # time zero
+b = None  # time 1 second
 # input Dirichelet boundary conditions
-fa = 0.0  # meters
-fb = 1.0  # 1 meter after b=1 seconds
+fa = None  # meters
+fb = None  # 1 meter after b=1 seconds
 
 # input physical parameter
-alpha = 5.0  # g/mass/2
+alpha = None  # g/mass/2
 
 # simulation parameters
 # p = int(sys.argv[1])
-n = int(sys.argv[2])        # this is the number of points used to estimate
-h = (b - a) / n
+n = None        # this is the number of points used to estimate
+h = None
 
 
 def plot_results():
@@ -56,7 +55,7 @@ def plot_results():
     plt.xlabel('time in seconds for n=%s\ntopology: %s' %
                (input_data, repr(topology)), fontsize=14)
     plt.ylabel('number of processes\n', fontsize=14)
-    plt.title('Serial vs. Parallel Merge-Sort', fontsize=18)
+    plt.title('Serial vs. Parallel Differential Equation', fontsize=18)
     plt.ylim([-1, len(bases) + 0.5])
     plt.xlim([0, max(bases) * 1.1])
     plt.vlines(bases[0], -1, len(bases) + 0.5, linestyles='dashed')
@@ -79,26 +78,67 @@ def evolve(A):
 
 
 def plot(B):
-    points = [(a + i * h, xi) for i, xi in enumerate(B[0])]
-    canvas.plot(points).save('trajectory.png')
+    l = logging.getLogger('root')
+    # points = [(a + i * h, xi) for i, xi in enumerate(B[0])]
+    l.debug('plot B           : %s' % B)
+    l.info('plot B           : %s' % B)
+    points = [(a + i * h, xi) for i, xi in enumerate(B)]
+    canvas.plot(points).save(trajectorypngfilename)
+
+
+def serial_print(A):
+    l = logging.getLogger('root')
+    B = A[1:-1]
+    l.debug('B           : %s' % B)
+    l.info('B           : %s' % B)
+    plot(B)
+
+
+def run_serial():
+    l = logging.getLogger('root')
+    l.debug('****RUN_SERIAL()****')
+    l.info('****RUN_SERIAL()****')
+    l.debug('input data       : %s' % input_data)
+    l.info('input data       : %s' % input_data)
+    A = [random() for k in range(n)]
+    l.debug('A           : %s' % A)
+    l.info('A           : %s' % A)
+
+    for t in range(200):
+        A = evolve(A)
+        A[1] = fa
+        A[-2] = fb
+        if t % 10 == 0:
+            serial_print(A)
+        t += 1
+    l.debug('A           : %s' % A)
+    l.info('A           : %s' % A)
 
 
 def parallel_print(comm, A):
+    l = logging.getLogger('root')
     B = A[1:-1]
     B = comm.all2one_collect(0, B)
     if comm.rank == 0:
-        print B
-        plot(B)
+        l.debug('B           : %s' % B)
+        l.info('B           : %s' % B)
+        # plot(B)
 
 
 def run_parallel(p):
-    comm = PSim(p)
+    l = logging.getLogger('root')
+    comm = PSim(p, topology, l)
     root = 0
     if comm.rank == root:
-        canvas = Canvas()
-        #A = [choice([0,1]) for k in range(n)]
+        l.debug('****RUN_PARALLEL()****')
+        l.info('****RUN_PARALLEL()****')
+        l.debug('# processes       : %d' % p)
+        l.info('# processes       : %d' % p)
+        l.debug('input data       : %s' % input_data)
+        l.info('input data       : %s' % input_data)
         A = [random() for k in range(n)]
-        print A
+        l.debug('A           : %s' % A)
+        l.info('A           : %s' % A)
     else:
         A = None
 
@@ -124,6 +164,8 @@ def run_parallel(p):
         if t % 10 == 0:
             parallel_print(comm, A)
         t += 1
+    if comm.rank != root:
+        os.kill(comm.pid, signal.SIGTERM)
 
 
 if __name__ == "__main__":
@@ -145,6 +187,7 @@ if __name__ == "__main__":
     algorithm_name = sys.argv[5] or None
     if algorithm_name is None:
         raise Exception('no algorithm name!')
+    canvas = Canvas()
     # make the get calls
     import requests                                 # to call api
     from requests.auth import HTTPBasicAuth         # to authenticate
@@ -163,8 +206,7 @@ if __name__ == "__main__":
                                   auth=auth)
     input_json = json.loads(input_data_get.text)
     try:
-        input_data = input_json['content'][0]['input_value']
-        input_data = [int(a) for a in input_data]
+        input_data = int(input_json['content'][0]['input_value'][0])
     except:
         raise Exception('invalid input data')
 
@@ -176,31 +218,45 @@ if __name__ == "__main__":
                   str(owner_id) + '_' + \
                   str(session_id) + '_' + \
                   '%s.png' % algorithm_name
+    trajectorypngfilename = str(simulation_id) + '_' + \
+                  str(owner_id) + '_' + \
+                  str(session_id) + '_' + \
+                  '%s.png' % 'trajectory'
     logger = log.setup_custom_logger('root', logfile, logging.INFO)
     log.log_system_info()
     logger.debug('main: START')
     logger.info('main: START')
+    # input domain
+    a = 0.0  # time zero
+    b = 1.0  # time 1 second
+    # input Dirichelet boundary conditions
+    fa = 0.0  # meters
+    fb = 1.0  # 1 meter after b=1 seconds
+
+    # input physical parameter
+    alpha = 5.0  # g/mass/2
+
+    # simulation parameters
+    # p = int(sys.argv[1])
+    n = input_data        # this is the number of points used to estimate
+    h = (b - a) / n
+
     # serial
-    data = [i for i in input_data]
     bases.append(ti.timeit(stmt='run_serial()',
                            setup='from __main__ import run_serial',
                            number=1))
-    data = [i for i in input_data]
     # parallel with 2 processors
     bases.append(ti.timeit(stmt='run_parallel(2)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    data = [i for i in input_data]
     # parallel with 4 processors
     bases.append(ti.timeit(stmt='run_parallel(4)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    data = [i for i in input_data]
     # parallel with 8 processors
     bases.append(ti.timeit(stmt='run_parallel(8)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    data = [i for i in input_data]
     # parallel with 16 processors
     bases.append(ti.timeit(stmt='run_parallel(16)',
                            setup='from __main__ import run_parallel',
@@ -212,8 +268,10 @@ if __name__ == "__main__":
     # respectively.
     log_files = {'log_content': open(logfile, 'rb')}
     plot_files = {'plot_content': open(pngfilename, 'rb')}
+    upload_files = {'upload_content': open(trajectorypngfilename, 'rb')}
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
+    upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
     logger.debug('log_payload: %s' % log_payload)
     logger.debug('plot_payload: %s' % plot_payload)
     logger.info('log_payload: %s' % log_payload)
@@ -221,9 +279,11 @@ if __name__ == "__main__":
     logger.debug('main: END')
     logger.info('main: END')
     log_r = requests.post(api_url + '/simulation_log/', data=log_payload, files=log_files, auth=auth)
-    plot_r = requests.post(api_url + '/simulation_plot/', data=plot_payload, files=plot_files, auth=auth)
+    plot_r = requests.post(api_url + '/simulation_time_plot/', data=plot_payload, files=plot_files, auth=auth)
+    upload_r = requests.post(api_url + '/simulation_upload/', data=upload_payload, files=upload_files, auth=auth)
     os.remove(logfile)
     os.remove(pngfilename)
+    os.remove(trajectorypngfilename)
 
 __author__ = 'Eric Bratt'
 __version__ = 'version 1.0'
