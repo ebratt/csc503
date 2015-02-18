@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from gluon.storage import Storage
+from plugin_cs_monitor.html_helpers import mybootstrap
 
 response.files.append(URL('static', 'css/prettify.css'))
 response.files.append(URL('static', 'js/prettify.js'))
@@ -29,17 +30,19 @@ What you should see in the monitoring dashboard:
    **TIMEOUT** status (the default timeout is 60 seconds).
     """
 
-    form = SQLFORM(db.simulation, fields=['algorithm', 'input_data'])
+    form = SQLFORM(db.simulation,
+                   fields=['algorithm', 'input_data'],
+                   submit_button='Calculate',
+                   formstyle=mybootstrap)
     simulation_id = None
     algorithm = None
-    if form.process(keepvalues=True).accepted:
+    # if form.process(keepvalues=True).accepted:
+    if form.process(onvalidation=my_form_processing).accepted:
         simulation_id = form.vars.id
         algorithm_id = int(form.vars.algorithm)
-        query = db(db.input_data.algorithms.contains(algorithm_id)).select()
-        valid_input = [item.id for item in query]
-        db.simulation.input_data.requires=IS_IN_SET(valid_input)
         algorithm = db(db.algorithm.id==algorithm_id).select()[0].Name
-        response.flash = 'form accepted'
+        session.flash = 'Simulation created'
+        redirect(URL('manage', 'worker1', args=[simulation_id, algorithm]))
     elif form.errors:
         response.flash = 'form has errors'
     else:
@@ -47,3 +50,13 @@ What you should see in the monitoring dashboard:
 
     return dict(docs=docs, form=form, simulation_id=simulation_id, algorithm=algorithm)
 
+
+def my_form_processing(form):
+    algorithm_id = int(form.vars.algorithm)
+    input_id = int(form.vars.input_data)
+    query = db(db.input_data.algorithms.contains(algorithm_id)).select()
+    valid_input = [item.id for item in query]
+    for x in valid_input:
+        if x == input_id:
+            return
+    form.errors.input_data = 'Invalid input data!'

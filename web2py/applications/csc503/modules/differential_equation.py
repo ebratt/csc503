@@ -80,8 +80,8 @@ def evolve(A):
 def plot(B):
     l = logging.getLogger('root')
     # points = [(a + i * h, xi) for i, xi in enumerate(B[0])]
-    l.debug('plot B           : %s' % B)
-    l.info('plot B           : %s' % B)
+    # l.debug('plot B           : %s' % B)
+    # l.info('plot B           : %s' % B)
     points = [(a + i * h, xi) for i, xi in enumerate(B)]
     canvas.plot(points).save(trajectorypngfilename)
 
@@ -101,8 +101,8 @@ def run_serial():
     l.debug('input data       : %s' % input_data)
     l.info('input data       : %s' % input_data)
     A = [random() for k in range(n)]
-    l.debug('A           : %s' % A)
-    l.info('A           : %s' % A)
+    l.debug('A init      : %s' % A)
+    l.info('A init      : %s' % A)
 
     for t in range(200):
         A = evolve(A)
@@ -111,8 +111,8 @@ def run_serial():
         if t % 10 == 0:
             serial_print(A)
         t += 1
-    l.debug('A           : %s' % A)
-    l.info('A           : %s' % A)
+    l.debug('A evolved       : %s' % A)
+    l.info('A evolved       : %s' % A)
 
 
 def parallel_print(comm, A):
