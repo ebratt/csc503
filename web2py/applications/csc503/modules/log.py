@@ -54,3 +54,18 @@ def log_system_info():
     l.info(interpreter)
     l.info(node)
     l.info(plat)
+
+
+def setup(type, input_data):
+    l = logging.getLogger('root')
+    l.debug('****Run %s****' % type)
+    l.info('****Run %s****' % type)
+    l.debug('input data       : %s' % input_data)
+    l.info('input data       : %s' % input_data)
+
+
+def log_a_value(val):
+    l = logging.getLogger('root')
+    l.debug('%s' % val)
+    l.info('%s' % val)
+

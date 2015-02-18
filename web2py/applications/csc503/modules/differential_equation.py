@@ -14,7 +14,7 @@ import plot as plt
 
 from psim import *
 import log
-
+import utility
 
 input_data = None
 topology = SWITCH
@@ -32,7 +32,6 @@ fb = None  # 1 meter after b=1 seconds
 alpha = None  # g/mass/2
 
 # simulation parameters
-# p = int(sys.argv[1])
 n = None        # this is the number of points used to estimate
 h = None
 
@@ -51,9 +50,6 @@ def evolve(A):
 
 def plot(B):
     l = logging.getLogger('root')
-    # points = [(a + i * h, xi) for i, xi in enumerate(B[0])]
-    # l.debug('plot B           : %s' % B)
-    # l.info('plot B           : %s' % B)
     points = [(a + i * h, xi) for i, xi in enumerate(B)]
     canvas.plot(points).save(trajectorypngfilename)
 
@@ -61,17 +57,13 @@ def plot(B):
 def serial_print(A):
     l = logging.getLogger('root')
     B = A[1:-1]
-    l.debug('B           : %s' % B)
-    l.info('B           : %s' % B)
+    l.log_a_value('B is: %s' % B)
     plot(B)
 
 
 def run_serial():
     l = logging.getLogger('root')
-    l.debug('****RUN_SERIAL()****')
-    l.info('****RUN_SERIAL()****')
-    l.debug('input data       : %s' % input_data)
-    l.info('input data       : %s' % input_data)
+    l.setup('serial', input_data)
     A = [random() for k in range(n)]
     l.debug('A init      : %s' % A)
     l.info('A init      : %s' % A)
@@ -83,8 +75,7 @@ def run_serial():
         if t % 10 == 0:
             serial_print(A)
         t += 1
-    l.debug('A evolved       : %s' % A)
-    l.info('A evolved       : %s' % A)
+    l.log_a_value('A evolved is: %s' % A)
 
 
 def parallel_print(comm, A):
@@ -92,9 +83,7 @@ def parallel_print(comm, A):
     B = A[1:-1]
     B = comm.all2one_collect(0, B)
     if comm.rank == 0:
-        l.debug('B           : %s' % B)
-        l.info('B           : %s' % B)
-        # plot(B)
+        l.log_a_value('B is: %s' % B)
 
 
 def run_parallel(p):
@@ -102,15 +91,10 @@ def run_parallel(p):
     comm = PSim(p, topology, l)
     root = 0
     if comm.rank == root:
-        l.debug('****RUN_PARALLEL()****')
-        l.info('****RUN_PARALLEL()****')
-        l.debug('# processes       : %d' % p)
-        l.info('# processes       : %d' % p)
-        l.debug('input data       : %s' % input_data)
-        l.info('input data       : %s' % input_data)
+        l = logging.getLogger('root')
+        l.setup('parallel (%s)' % p, input_data)
         A = [random() for k in range(n)]
-        l.debug('A           : %s' % A)
-        l.info('A           : %s' % A)
+        l.log_a_value('A is: %s' % A)
     else:
         A = None
 
@@ -144,22 +128,12 @@ if __name__ == "__main__":
 
     # let's get the simulation information from the db
     # check required parameters passed-in
-    api_url = sys.argv[1] or None
-    if api_url is None:
-        raise Exception('no api url!')
-    simulation_id = int(sys.argv[2]) or None
-    if simulation_id is None:
-        raise Exception('no simulation id!')
-    owner_id = sys.argv[3] or None
-    if owner_id is None:
-        raise Exception('no owner id!')
-    session_id = sys.argv[4] or None
-    if session_id is None:
-        raise Exception('no session id!')
-    algorithm_name = sys.argv[5] or None
-    if algorithm_name is None:
-        raise Exception('no algorithm name!')
+    utility.check_args(sys.argv)
+
+    # create a canvas to plot the trajectory
     canvas = Canvas()
+    # check the command-line args
+    api_url, simulation_id, owner_id, session_id, algorithm_name = utility.check_args(sys.argv)
     # make the get calls
     import requests                                 # to call api
     from requests.auth import HTTPBasicAuth         # to authenticate
