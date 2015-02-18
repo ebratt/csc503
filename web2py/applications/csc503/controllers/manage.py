@@ -12,5 +12,5 @@ def worker1():
                                 str(session_id),
                                 algorithm])
     response.js = "$('#worker_1_queue').addClass('disabled');"
-    response.flash = "Function %s scheduled" % algorithm
+    session.flash = "%s scheduled" % algorithm
     redirect(URL('plugin_cs_monitor', 'index'))

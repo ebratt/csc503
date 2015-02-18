@@ -1,0 +1,54 @@
+2015-02-17 23:36:10,141 - INFO - log - ****SYSTEM INFORMATION****
+2015-02-17 23:36:10,141 - INFO - log - Python version    : 2.7.3
+2015-02-17 23:36:10,141 - INFO - log - compiler          : GCC 4.7.2
+2015-02-17 23:36:10,141 - INFO - log - system            : Linux
+2015-02-17 23:36:10,141 - INFO - log - release           : 3.2.0-4-686-pae
+2015-02-17 23:36:10,141 - INFO - log - machine           : i686
+2015-02-17 23:36:10,141 - INFO - log - cpu's             : 2
+2015-02-17 23:36:10,141 - INFO - log - interpreter       : 32bit
+2015-02-17 23:36:10,142 - INFO - log - node              : crunchbang
+2015-02-17 23:36:10,142 - INFO - log - platform          : Linux-3.2.0-4-686-pae-i686-with-debian-7.8
+2015-02-17 23:36:10,142 - INFO - floating_point_add - main: START
+2015-02-17 23:36:10,144 - INFO - floating_point_add - ****RUN_SERIAL()****
+2015-02-17 23:36:10,334 - INFO - floating_point_add - head of a         : [0.052363598850944326, 0.08718667752263232, 0.4072417636703983, 0.10770023493843905, 0.9011988779516946]
+2015-02-17 23:36:10,334 - INFO - floating_point_add - head of b         : [0.10337852557304117, 0.7482590414438126, 0.2966602658868075, 0.27663573664837793, 0.37280621233419053]
+2015-02-17 23:36:10,334 - INFO - floating_point_add - data size         : 416620
+2015-02-17 23:36:10,334 - INFO - floating_point_add - result            : 104161.766902
+2015-02-17 23:36:10,346 - INFO - psim - pid for 0 is 21365
+2015-02-17 23:36:10,346 - INFO - psim - pid for 1 is 21375
+2015-02-17 23:36:10,487 - INFO - floating_point_add - head of a         : [0.936490220829669, 0.3362744920832319, 0.7432521548687043, 0.7304371286429016, 0.2924864395534613]
+2015-02-17 23:36:10,488 - INFO - floating_point_add - head of b         : [0.0750584477497298, 0.37112023596591937, 0.5971897212118924, 0.22696490415711335, 0.7798747205618592]
+2015-02-17 23:36:10,488 - INFO - floating_point_add - data size         : 416620
+2015-02-17 23:36:10,488 - INFO - floating_point_add - # processes       : 2
+2015-02-17 23:36:12,390 - INFO - floating_point_add - result            : 104113.172892
+2015-02-17 23:36:12,403 - INFO - psim - pid for 0 is 21365
+2015-02-17 23:36:12,404 - INFO - floating_point_add - ****RUN_PARALLEL()****
+2015-02-17 23:36:12,404 - INFO - psim - pid for 2 is 21378
+2015-02-17 23:36:12,540 - INFO - floating_point_add - head of a         : [0.38309725277611384, 0.6211883921580083, 0.5311190784226615, 0.30256458604473635, 0.32039611483318164]
+2015-02-17 23:36:12,540 - INFO - floating_point_add - head of b         : [0.6864247387061077, 0.5277220567094715, 0.07165912698670573, 0.3093263437876824, 0.010424657351857158]
+2015-02-17 23:36:12,540 - INFO - floating_point_add - data size         : 416620
+2015-02-17 23:36:12,540 - INFO - floating_point_add - # processes       : 3
+2015-02-17 23:36:14,999 - INFO - floating_point_add - result            : 104164.593761
+2015-02-17 23:36:15,012 - INFO - psim - pid for 1 is 21379
+2015-02-17 23:36:15,013 - INFO - psim - pid for 0 is 21365
+2015-02-17 23:36:15,014 - INFO - floating_point_add - ****RUN_PARALLEL()****
+2015-02-17 23:36:15,013 - INFO - psim - pid for 2 is 21380
+2015-02-17 23:36:15,015 - INFO - psim - pid for 3 is 21381
+2015-02-17 23:36:15,147 - INFO - floating_point_add - head of a         : [0.03767009127482168, 0.04391284653691607, 0.9854555787388891, 0.44424248724793103, 0.4674719316349756]
+2015-02-17 23:36:15,147 - INFO - floating_point_add - head of b         : [0.7358128156786649, 0.1550197736445711, 0.03020242570118936, 0.668757654402422, 0.8549891827052517]
+2015-02-17 23:36:15,148 - INFO - floating_point_add - data size         : 416620
+2015-02-17 23:36:15,148 - INFO - floating_point_add - # processes       : 4
+2015-02-17 23:36:17,845 - INFO - floating_point_add - result            : 103931.261814
+2015-02-17 23:36:17,859 - INFO - psim - pid for 3 is 21385
+2015-02-17 23:36:17,861 - INFO - psim - pid for 4 is 21386
+2015-02-17 23:36:17,861 - INFO - floating_point_add - ****RUN_PARALLEL()****
+2015-02-17 23:36:17,862 - INFO - psim - pid for 5 is 21387
+2015-02-17 23:36:17,863 - INFO - psim - pid for 2 is 21384
+2015-02-17 23:36:18,001 - INFO - floating_point_add - head of a         : [0.5604402925183012, 0.5534283079994762, 0.9915553443453925, 0.48574298560896345, 0.17787576443536646]
+2015-02-17 23:36:18,001 - INFO - floating_point_add - head of b         : [0.7113422073961435, 0.9948124154672681, 0.7602945892300111, 0.31363892708036734, 0.2650162397420742]
+2015-02-17 23:36:18,001 - INFO - floating_point_add - data size         : 416620
+2015-02-17 23:36:18,001 - INFO - floating_point_add - # processes       : 6
+2015-02-17 23:36:21,107 - INFO - floating_point_add - result            : 104297.230926
+2015-02-17 23:36:21,497 - INFO - floating_point_add - log_payload: {'log_owner': '1', 'simulation': 40}
+2015-02-17 23:36:21,497 - INFO - floating_point_add - plot_payload: {'plot_owner': '1', 'simulation': 40}
+2015-02-17 23:36:21,497 - INFO - floating_point_add - main: END

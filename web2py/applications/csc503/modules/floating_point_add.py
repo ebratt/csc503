@@ -1,55 +1,18 @@
-"""
-Created by Eric Bratt, 2015
-provide the number of processing nodes and the 
-size of the vector of random numbers
- 
-example taken from section 2.2.5 of An Introduction to Parallel
-Programming Peter S. Pacheco University of San Francisco
-Pacheco, Peter (2011-02-17). An Introduction to Parallel Programming
-Elsevier Science. Kindle Edition.
-"""
+# -*- coding: utf-8 -*-
+
 import random
 import logging
 import timeit as ti
 import signal
-
-from matplotlib import pyplot as plt
-import numpy as np
-
 from psim import *
 import log
-
 import sys
+import plot
 
 input_data = None
 topology = SWITCH
 bases = []
-
-
-def plot_results():
-    bar_labels = ['serial', '2', '3', '4', '6']
-    plt.figure(figsize=(10, 8))
-    # plot bars
-    y_pos = np.arange(len(bases))
-    plt.yticks(y_pos, bar_labels, fontsize=16)
-    bars = plt.barh(y_pos, bases,
-                    align='center', alpha=0.4, color='g')
-    # annotation and labels
-    for ba, be in zip(bars, bases):
-        plt.text(ba.get_width() + 1.4, ba.get_y() + ba.get_height() / 2,
-                 '{0:.2%}'.format(bases[0] / be),
-                 ha='center', va='bottom', fontsize=11)
-    plt.xlabel('time in seconds for n=%s\ntopology: %s' %
-               (input_data, repr(topology)), fontsize=14)
-    plt.ylabel('number of processes\n', fontsize=14)
-    plt.title('Serial vs. Parallel Scalar Product', fontsize=18)
-    plt.ylim([-1, len(bases) + 0.5])
-    plt.xlim([0, max(bases) * 1.1])
-    plt.vlines(bases[0], -1, len(bases) + 0.5, linestyles='dashed')
-    plt.grid()
-    fig = plt.gcf()
-    # fig.show()
-    fig.savefig(pngfilename)
+procs_list = ['serial', '2', '3', '4', '6']
 
 
 def run_serial():
@@ -179,7 +142,8 @@ if __name__ == "__main__":
     bases.append(ti.timeit(stmt='run_parallel(6)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    plot_results()
+    # plot the timing statistics
+    plot.plot_results(bases, procs_list, algorithm_name, pngfilename)
 
     # Now we need to upload the log file and the plot png (POST) to the
     # simulation_log.log_content and simulation_time_plot.plot_content,

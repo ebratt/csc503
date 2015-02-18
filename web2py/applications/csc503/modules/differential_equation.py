@@ -10,9 +10,7 @@ import signal
 import sys
 from nlib import *
 from random import random
-
-from matplotlib import pyplot as plt
-import numpy as np
+import plot as plt
 
 from psim import *
 import log
@@ -21,6 +19,7 @@ import log
 input_data = None
 topology = SWITCH
 bases = []
+procs_list = ['serial', '2', '4', '8', '16']
 
 # input domain
 a = None  # time zero
@@ -36,33 +35,6 @@ alpha = None  # g/mass/2
 # p = int(sys.argv[1])
 n = None        # this is the number of points used to estimate
 h = None
-
-
-def plot_results():
-    # bar_labels = ['serial', '2', '3', '4', '6']
-    bar_labels = ['serial', '2', '4', '8', '16']
-    plt.figure(figsize=(10, 8))
-    # plot bars
-    y_pos = np.arange(len(bases))
-    plt.yticks(y_pos, bar_labels, fontsize=16)
-    bars = plt.barh(y_pos, bases,
-                    align='center', alpha=0.4, color='g')
-    # annotation and labels
-    for ba, be in zip(bars, bases):
-        plt.text(ba.get_width() + 1.4, ba.get_y() + ba.get_height() / 2,
-                 '{0:.2%}'.format(bases[0] / be),
-                 ha='center', va='bottom', fontsize=11)
-    plt.xlabel('time in seconds for n=%s\ntopology: %s' %
-               (input_data, repr(topology)), fontsize=14)
-    plt.ylabel('number of processes\n', fontsize=14)
-    plt.title('Serial vs. Parallel Differential Equation', fontsize=18)
-    plt.ylim([-1, len(bases) + 0.5])
-    plt.xlim([0, max(bases) * 1.1])
-    plt.vlines(bases[0], -1, len(bases) + 0.5, linestyles='dashed')
-    plt.grid()
-    fig = plt.gcf()
-    # fig.show()
-    fig.savefig(pngfilename)
 
 
 def rules(Aip, Ai, Aim):
@@ -261,7 +233,8 @@ if __name__ == "__main__":
     bases.append(ti.timeit(stmt='run_parallel(16)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    plot_results()
+    # plot the timing statistics
+    plt.plot_results(bases, procs_list, algorithm_name, pngfilename)
 
     # Now we need to upload the log file and the plot png (POST) to the
     # simulation_log.log_content and simulation_plot.plot_content,

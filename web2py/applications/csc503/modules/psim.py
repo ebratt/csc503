@@ -42,7 +42,7 @@ class PSim(object):
     # """
     # logs the message into self._logfile
     # """
-    #     if self.logfile!=None:
+    # if self.logfile!=None:
     #         self.logfile.write(message)
 
     # def __init__(self, p, topology=SWITCH, logfilename=None):
@@ -222,6 +222,22 @@ class PSim(object):
                           (self.rank, repr(value)))
         return result
 
+    @staticmethod
+    def sum(x, y):
+        return x + y
+
+    @staticmethod
+    def mul(x, y):
+        return x * y
+
+    @staticmethod
+    def max(x, y):
+        return max(x, y)
+
+    @staticmethod
+    def min(x, y):
+        return min(x, y)
+
     def barrier(self):
         # self.log("process %i: BEGIN barrier()\n" % (self.rank))
         self.logger.debug("process %i: BEGIN barrier()" % self.rank)
@@ -229,3 +245,101 @@ class PSim(object):
         # self.log("process %i: END barrier()\n" % (self.rank))
         self.logger.debug("process %i: END barrier()" % self.rank)
         return
+
+def test():
+    comm=PSim(5,SWITCH)
+    if comm.rank==0: print 'start test'
+    a=sum(comm.all2all_broadcast(comm.rank))
+    comm.barrier()
+    b=comm.all2all_reduce(comm.rank)
+    if a!=10 or a!=b:
+        print 'from process', comm.rank
+        raise Exception
+    if comm.rank==0: print 'test passed'
+
+if __name__=='__main__': test()
+
+def scalar_product_test1(n,p):
+    import random
+    from psim import PSim
+    comm = PSim(p)
+    h = n/p
+    if comm.rank==0:
+        a = [random.random() for i in range(n)]
+        b = [random.random() for i in range(n)]
+        for k in range(1,p):
+            comm.send(k, a[k*h:k*h+h])
+            comm.send(k, b[k*h:k*h+h])
+    else:
+        a = comm.recv(0)
+        b = comm.recv(0)
+    scalar = sum(a[i]*b[i] for i in range(h))
+    if comm.rank == 0:
+        for k in range(1,p):
+            scalar += comm.recv(k)
+        print scalar
+    else:
+        comm.send(0,scalar)
+
+def scalar_product_test2(n,p):
+    import random
+    from psim import PSim
+    comm = PSim(p)
+    a = b = None
+    if comm.rank==0:
+        a = [random.random() for i in range(n)]
+        b = [random.random() for i in range(n)]
+    a = comm.one2all_scatter(0,a)
+    b = comm.one2all_scatter(0,b)
+
+    scalar = sum(a[i]*b[i] for i in range(len(a)))
+
+    scalar = comm.all2one_reduce(0,scalar)
+    if comm.rank == 0:
+        print scalar
+
+
+def mergesort(A, p=0, r=None):
+    if r is None: r = len(A)
+    if p<r-1:
+        q = int((p+r)/2)
+        mergesort(A,p,q)
+        mergesort(A,q,r)
+        merge(A,p,q,r)
+
+def merge(A,p,q,r):
+    B,i,j = [],p,q
+    while True:
+        if A[i]<=A[j]:
+            B.append(A[i])
+            i=i+1
+        else:
+            B.append(A[j])
+            j=j+1
+        if i==q:
+            while j<r:
+                B.append(A[j])
+                j=j+1
+            break
+        if j==r:
+            while i<q:
+                B.append(A[i])
+                i=i+1
+            break
+    A[p:r]=B
+
+def mergesort_test(n,p):
+    import random
+    from psim import PSim
+    comm = PSim(p)
+    if comm.rank==0:
+        data = [random.random() for i in range(n)]
+        comm.send(1, data[n/2:])
+        mergesort(data,0,n/2)
+        data[n/2:] = comm.recv(1)
+        merge(data,0,n/2,n)
+        print data
+    else:
+        data = comm.recv(0)
+        mergesort(data)
+        comm.send(0,data)

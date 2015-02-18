@@ -78,7 +78,7 @@
     </div>
 
     <div class="container-fluid">
-      <div class="row">
+      <!--<div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">Overview</a></li>
@@ -95,7 +95,7 @@
           </ul>
         </div>
       </div>
-      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
         <div class="col-md-12 main">
             <div class="flashbs3 alert alert-info alert-dismissible" role="alert">
               <span class="flashcont">{{=response.flash or ''}}</span>
@@ -108,18 +108,18 @@
                 <footer class="footer span12" id="footer">
                     <div class="footer-content">
                         {{block footer}} <!-- this is default footer -->
-                        <div class="copyright pull-left">{{=T('Copyright')}} &#169; 2015</div>
-                        <div id="poweredBy" class="pull-right">
-                            {{=T('Powered by')}}
-                            <a href="http://www.web2py.com/">web2py</a>
-                        </div>
+                            <div class="copyright pull-left">{{=T('Copyright')}} &#169; 2015</div>
+                            <div id="poweredBy" class="pull-right">
+                                {{=T('Powered by')}}
+                                <a href="http://www.web2py.com/">web2py</a>
+                            </div>
                         {{end}}
                     </div>
                 </footer>
-              </div>
+            </div>
         </div>
       </div>
-    </div>
+    <!--</div>-->
 
     <script type="text/javascript">
       $(document).ready(function () {
