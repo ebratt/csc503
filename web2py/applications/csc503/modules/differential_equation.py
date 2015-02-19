@@ -192,7 +192,7 @@ if __name__ == "__main__":
         utility.make_requests(api_url, auth, log_files, plot_files, upload_files,
                               log_payload, plot_payload, upload_payload)
     # cleanup temp files
-    # utility.remove_files(logfile, pngfilename, trajectorypngfilename)
+    utility.remove_files(logfile, pngfilename, trajectorypngfilename)
 
 __author__ = 'Eric Bratt'
 __version__ = 'version 1.0'
