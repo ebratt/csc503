@@ -9,7 +9,8 @@ import timeit as ti
 import signal
 from math import log as log2
 import sys
-import plot
+import plot as plt
+import utility
 from psim import *
 import log
 
@@ -19,6 +20,7 @@ data = None
 topology = SWITCH
 bases = []
 procs_list = ['serial', '2', '4', '8', '16']
+logger = None
 
 
 def merge(A, i, j, n):
@@ -56,12 +58,15 @@ def run_parallel(p):
     source=0
     n = len(A)
     l = logging.getLogger('root')
-    comm = PSim(p, topology, l)
+    comm = PSim(p, topology, logger)
+    if comm.rank == source:
+        logger.setup('parallel (%s)' % p, input_data)
+        logger.log_a_value('# processes       : %d' % p)
+        logger.log_a_value('input data       : %s' % input_data)
     x = log2(n/p,2)
     assert int(x)==x
 
-    l.debug('%d scattering to all %s'% (comm.rank, A))
-    l.info('%d scattering to all %s'% (comm.rank, A))
+    logger.log_a_value('%d scattering to all %s'% (comm.rank, A))
     A = comm.one2all_scatter(source,A)
     mergesort(A)
 
@@ -82,87 +87,33 @@ def run_parallel(p):
         size = size*2
         comm.barrier()
     if comm.rank == 0:
-        l.debug('****RUN_PARALLEL()****')
-        l.info('****RUN_PARALLEL()****')
-        l.debug('# processes       : %d' % p)
-        l.info('# processes       : %d' % p)
-        l.debug('input data       : %s' % input_data)
-        l.info('input data       : %s' % input_data)
-        l.debug('result           : %s' % A)
-        l.info('result           : %s' % A)
+        logger.log_a_value('result           : %s' % A)
     else:
         os.kill(comm.pid, signal.SIGTERM)
 
 def run_serial():
-    l = logging.getLogger('root')
-    l.debug('****RUN_SERIAL()****')
-    l.info('****RUN_SERIAL()****')
-    l.debug('input data       : %s' % input_data)
-    l.info('input data       : %s' % input_data)
+    logger.setup('serial', input_data)
+    logger.log_a_value('input data       : %s' % input_data)
     result = mergesort(data)
-    l.debug('result            : %s' % result)
-    l.info('result            : %s' % result)
+    logger.log_a_value('result           : %s' % result)
 
 
 if __name__ == "__main__":
+    # check the command-line args
+    api_url, simulation_id, owner_id, session_id, algorithm_name = utility.check_args(sys.argv)
 
-    # let's get the simulation information from the db
-    # check required parameters passed-in
-    api_url = sys.argv[1] or None
-    if api_url is None:
-        raise Exception('no api url!')
-    simulation_id = int(sys.argv[2]) or None
-    if simulation_id is None:
-        raise Exception('no simulation id!')
-    owner_id = sys.argv[3] or None
-    if owner_id is None:
-        raise Exception('no owner id!')
-    session_id = sys.argv[4] or None
-    if session_id is None:
-        raise Exception('no session id!')
-    algorithm_name = sys.argv[5] or None
-    if algorithm_name is None:
-        raise Exception('no algorithm name!')
     # make the get calls
-    import requests                                 # to call api
-    from requests.auth import HTTPBasicAuth         # to authenticate
-    auth = HTTPBasicAuth('api@api.com', 'pass')     # TODO: change this in prod
-    sim_input_get = requests.get(api_url + '/simulation/id/' +
-                                 str(simulation_id) +
-                                 '/input_data.json',
-                                 auth=auth)
-    import json
-    sim_input_json = json.loads(sim_input_get.text)
-    input_data_id = sim_input_json['content'][0]['input_data']
-    input_data_get = requests.get(api_url +
-                                  '/input-data/id/' +       # why input-id?
-                                  str(input_data_id) +
-                                  '/input_value.json',
-                                  auth=auth)
-    input_json = json.loads(input_data_get.text)
-    try:
-        input_data = input_json['content'][0]['input_value']
-        input_data = [int(a) for a in input_data]
-    except:
-        try:
-            input_data = [a.encode('ascii', 'ignore') for a in input_data]
-        except:
-            print 'input_data:', input_data
-            raise Exception('invalid input data')
+    input_data, auth = utility.get_data(api_url, simulation_id)
 
-    logfile = str(simulation_id) + '_' + \
-              str(owner_id) + '_' + \
-              str(session_id) + '_' + \
-              '%s.log' % algorithm_name
-    pngfilename = str(simulation_id) + '_' + \
-                  str(owner_id) + '_' + \
-                  str(session_id) + '_' + \
-                  '%s.png' % algorithm_name
-    logger = log.setup_custom_logger('root', logfile, logging.INFO)
-    log.log_system_info()
-    logger.debug('main: START')
-    logger.info('main: START')
-    # serial
+    # setup the files
+    logfile, pngfilename, trajectorypngfilename = \
+        utility.setup_files(simulation_id, owner_id, session_id, algorithm_name)
+
+    # setup the logger
+    logger = log.psim2web2pyLogger('root', logfile, logging.INFO)
+    logger.log_system_info(algorithm_name)
+    logger.log_a_value('main: START')
+
     data = [i for i in input_data]
     bases.append(ti.timeit(stmt='run_serial()',
                            setup='from __main__ import run_serial',
@@ -187,11 +138,12 @@ if __name__ == "__main__":
     bases.append(ti.timeit(stmt='run_parallel(16)',
                            setup='from __main__ import run_parallel',
                            number=1))
+
     # plot the timing statistics
-    plot.plot_results(bases, procs_list, algorithm_name, pngfilename)
+    plt.plot_results(bases, procs_list, algorithm_name, pngfilename)
 
     # Now we need to upload the log file and the plot png (POST) to the
-    # simulation_log.log_content and simulation_time_plot.plot_content,
+    # simulation_log.log_content and simulation_plot.plot_content,
     # respectively.
     log_files = {'log_content': open(logfile, 'rb')}
     plot_files = {'plot_content': open(pngfilename, 'rb')}
@@ -199,17 +151,15 @@ if __name__ == "__main__":
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
     upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
-    logger.debug('log_payload: %s' % log_payload)
-    logger.debug('plot_payload: %s' % plot_payload)
-    logger.info('log_payload: %s' % log_payload)
-    logger.info('plot_payload: %s' % plot_payload)
-    logger.debug('main: END')
-    logger.info('main: END')
-    log_r = requests.post(api_url + '/simulation_log/', data=log_payload, files=log_files, auth=auth)
-    plot_r = requests.post(api_url + '/simulation_time_plot/', data=plot_payload, files=plot_files, auth=auth)
-    upload_r = requests.post(api_url + '/simulation_upload/', data=upload_payload, files=upload_files, auth=auth)
-    os.remove(logfile)
-    os.remove(pngfilename)
+    logger.log_a_value('log_payload: %s' % log_payload)
+    logger.log_a_value('plot_payload: %s' % plot_payload)
+    logger.log_a_value('main: END')
+    # get the upload responses
+    log_r, plot_r, upload_r = \
+        utility.make_requests(api_url, auth, log_files, plot_files, upload_files,
+                              log_payload, plot_payload, upload_payload)
+    # cleanup temp files
+    utility.remove_files(logfile, pngfilename, trajectorypngfilename)
 
 __author__ = 'Eric Bratt'
 __version__ = 'version 1.0'

@@ -8,64 +8,65 @@ import multiprocessing as mp
 import logging
 
 
-def setup_custom_logger(name, logfilename, level=logging.DEBUG):
-    formatter = logging.Formatter(
-        fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
+class psim2web2pyLogger(object):
+    def __init__(self, name, logfilename, level=logging.DEBUG):
+        self.formatter = logging.Formatter(
+            fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
+        self.handler = logging.FileHandler(filename=logfilename, mode='w')
+        self.handler.setFormatter(self.formatter)
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(level)
+        self.logger.addHandler(self.handler)
+        self.level = level
 
-    handler = logging.FileHandler(filename=logfilename, mode='w')
-    # handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
+    def log_system_info(self, algorithm_name, debug=False):
+        header0 = '****%s****' % algorithm_name
+        header1 = '****SYSTEM INFORMATION****'
+        python_version = 'Python version    : %s' % platform.python_version()
+        compiler = 'compiler          : %s' % platform.python_compiler()
+        system = 'system            : %s' % platform.system()
+        release = 'release           : %s' % platform.release()
+        machine = 'machine           : %s' % platform.machine()
+        cpus = "cpu's             : %s" % mp.cpu_count()
+        interpreter = 'interpreter       : %s' % platform.architecture()[0]
+        node = 'node              : %s' % platform.node()
+        plat = 'platform          : %s' % platform.platform()
+        if (self.level == logging.DEBUG) and (debug is True):
+            self.logger.debug(header0)
+            self.logger.debug(header1)
+            self.logger.debug(python_version)
+            self.logger.debug(compiler)
+            self.logger.debug(system)
+            self.logger.debug(release)
+            self.logger.debug(machine)
+            self.logger.debug(cpus)
+            self.logger.debug(interpreter)
+            self.logger.debug(node)
+            self.logger.debug(plat)
+        if (self.level == logging.INFO) and (debug is False):
+            self.logger.info(header0)
+            self.logger.info(header1)
+            self.logger.info(python_version)
+            self.logger.info(compiler)
+            self.logger.info(system)
+            self.logger.info(release)
+            self.logger.info(machine)
+            self.logger.info(cpus)
+            self.logger.info(interpreter)
+            self.logger.info(node)
+            self.logger.info(plat)
 
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
-    return logger
+    def setup(self, type, input_data, debug=False):
+        if (self.level == logging.DEBUG) and (debug is True):
+            self.logger.debug('****Run %s****' % type)
+            self.logger.debug('input data       : %s' % input_data)
+        if (self.level == logging.INFO) and (debug is False):
+            self.logger.info('****Run %s****' % type)
+            self.logger.info('input data       : %s' % input_data)
 
-
-def log_system_info():
-    l = logging.getLogger('root')
-    header = '****SYSTEM INFORMATION****'
-    python_version = 'Python version    : %s' % platform.python_version()
-    compiler = 'compiler          : %s' % platform.python_compiler()
-    system = 'system            : %s' % platform.system()
-    release = 'release           : %s' % platform.release()
-    machine = 'machine           : %s' % platform.machine()
-    cpus = "cpu's             : %s" % mp.cpu_count()
-    interpreter = 'interpreter       : %s' % platform.architecture()[0]
-    node = 'node              : %s' % platform.node()
-    plat = 'platform          : %s' % platform.platform()
-    l.debug(header)
-    l.debug(python_version)
-    l.debug(compiler)
-    l.debug(system)
-    l.debug(release)
-    l.debug(machine)
-    l.debug(cpus)
-    l.debug(interpreter)
-    l.debug(node)
-    l.debug(plat)
-    l.info(header)
-    l.info(python_version)
-    l.info(compiler)
-    l.info(system)
-    l.info(release)
-    l.info(machine)
-    l.info(cpus)
-    l.info(interpreter)
-    l.info(node)
-    l.info(plat)
-
-
-def setup(type, input_data):
-    l = logging.getLogger('root')
-    l.debug('****Run %s****' % type)
-    l.info('****Run %s****' % type)
-    l.debug('input data       : %s' % input_data)
-    l.info('input data       : %s' % input_data)
-
-
-def log_a_value(val):
-    l = logging.getLogger('root')
-    l.debug('%s' % val)
-    l.info('%s' % val)
+    def log_a_value(self, val, debug=False):
+        if (self.level == logging.DEBUG) and (debug is True):
+            self.logger.debug('%s' % val)
+        if (self.level == logging.INFO) and (debug is False):
+            self.logger.info('%s' % val)
 

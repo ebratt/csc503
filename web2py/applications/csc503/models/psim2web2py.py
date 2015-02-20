@@ -10,6 +10,7 @@ db.define_table('algorithm',
 db.define_table('input_data',
                 Field('input_value', 'list:string'),
                 Field('algorithms', 'list:reference algorithm'),
+                Field('input_data_type', 'string', requires=IS_IN_SET(['int','list'])),
                 Field('description', 'string'),
                 format='%(input_value)s-%(description)s')
 
@@ -99,29 +100,42 @@ def check_initialize():
         algorithms = db.executesql('SELECT id FROM algorithm where Name == "floating_point_add";')
         algorithms = [x for (x, ) in algorithms]
         description = 'Number of random integers to add'
-        db.input_data.insert(input_value=input_value, algorithms=algorithms, description=description)
+        db.input_data.insert(input_value=input_value,
+                             algorithms=algorithms,
+                             input_data_type='int',
+                             description=description)
         db.commit()
         input_value = [random.randint(0, 16) for r in xrange(16)]
         algorithms = db.executesql('SELECT id FROM algorithm where Name == "merge_sort" OR Name == "bubble_sort";')
         algorithms = [x for (x, ) in algorithms]
         description = 'List of things to sort'
         # algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select().id
-        db.input_data.insert(input_value=input_value, algorithms=algorithms, description=description)
+        db.input_data.insert(input_value=input_value,
+                             algorithms=algorithms,
+                             input_data_type='list',
+                             description=description)
         db.commit()
         input_value = [chr(random.randint(97, 122)) for r in xrange(97, 123)] + \
                       [chr(random.randint(97, 103)) for r in xrange(97, 103)]
         description = 'List of things to sort'
-        db.input_data.insert(input_value=input_value, algorithms=algorithms, description=description)
+        db.input_data.insert(input_value=input_value,
+                             algorithms=algorithms,
+                             input_data_type='list',
+                             description=description)
         db.commit()
         algorithms = db.executesql('SELECT id FROM algorithm where Name == "differential_equation";')
         algorithms = [x for (x, ) in algorithms]
         description = 'Number of derivative steps'
-        for i in xrange(1, 50):
+        for i in xrange(10, 20):
             input_value = [i]
-            db.input_data.insert(input_value=input_value, algorithms=algorithms, description=description)
+            db.input_data.insert(input_value=input_value,
+                                 algorithms=algorithms,
+                                 input_data_type='int',
+                                 description=description)
             db.commit()
 
 
 
 # do initialization check
+# cache.ram('db_initialized', lambda: check_initialize())
 cache.ram('db_initialized', lambda: check_initialize(), time_expire=None)

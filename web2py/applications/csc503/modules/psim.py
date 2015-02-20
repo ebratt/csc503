@@ -43,7 +43,7 @@ class PSim(object):
     # logs the message into self._logfile
     # """
     # if self.logfile!=None:
-    #         self.logfile.write(message)
+    # self.logfile.write(message)
 
     # def __init__(self, p, topology=SWITCH, logfilename=None):
     def __init__(self, p, topology, l):
@@ -51,12 +51,12 @@ class PSim(object):
         forks p-1 processes and creates p*p
         """
         self.logger = l  # new
-        self.logger.debug('PSim_mp: initialized PSim_mp')  # new
+        self.logger.log_a_value('PSim: initialized PSim')  # new
         # self.logfile = logfilename and open(logfilename, 'w')
         self.topology = topology
         # self.log("START: creating %i parallel processes\n" % p)
         self.nprocs = p
-        self.logger.debug("START: creating %i parallel processes" % p)  # new
+        self.logger.log_a_value("START: creating %i parallel processes" % p)  # new
         self.pipes = {}
         self.pid = -1
         for i in range(p):
@@ -67,15 +67,15 @@ class PSim(object):
             if not os.fork():
                 self.rank = i
                 self.pid = os.getpid()
-                self.logger.debug('pid for %i is %i' % (self.rank, self.pid))
-                self.logger.info('pid for %i is %i' % (self.rank, self.pid))
+                self.logger.log_a_value('pid for %i is %i' % (self.rank, self.pid))
+                self.logger.log_a_value('pid for %i is %i' % (self.rank, self.pid))
                 break
         # self.log("START: done.\n")
         if self.rank == 0:
             self.pid = os.getpid()
-            self.logger.debug('pid for %i is %i' % (self.rank, self.pid))
-            self.logger.info('pid for %i is %i' % (self.rank, self.pid))
-            self.logger.debug("START: done.")
+            self.logger.log_a_value('pid for %i is %i' % (self.rank, self.pid))
+            self.logger.log_a_value('pid for %i is %i' % (self.rank, self.pid))
+            self.logger.log_a_value("START: done.")
 
     def _send(self, j, data):
         """
@@ -83,20 +83,20 @@ class PSim(object):
         """
         if j < 0 or j >= self.nprocs:
             # self.log("process %i: send(%i,...) failed!\n" % (self.rank, j))
-            self.logger.debug("process %i: send(%i,...) failed!" %
-                              (self.rank, j))  # new
+            self.logger.log_a_value("process %i: send(%i,...) failed!" %
+                              (self.rank, j), True)  # new
             raise Exception
         # self.log("process %i: send(%i,%s) starting...\n" % \
         # (self.rank, j, repr(data)))
-        self.logger.debug("process %i: send(%i,%s) starting..." %
-                          (self.rank, j, repr(data)))
+        self.logger.log_a_value("process %i: send(%i,%s) starting..." %
+                          (self.rank, j, repr(data)), True)
         s = cPickle.dumps(data)
         os.write(self.pipes[self.rank, j][1], string.zfill(str(len(s)), 10))
         os.write(self.pipes[self.rank, j][1], s)
         # self.log("process %i: send(%i,%s) success.\n" % \
         # (self.rank, j, repr(data)))
-        self.logger.debug("process %i: send(%i,%s) success." %
-                          (self.rank, j, repr(data)))
+        self.logger.log_a_value("process %i: send(%i,%s) success." %
+                          (self.rank, j, repr(data)), True)
 
     def send(self, j, data):
         if not self.topology(self.rank, j):
@@ -109,20 +109,20 @@ class PSim(object):
         """
         if j < 0 or j >= self.nprocs:
             # self.log("process %i: recv(%i) failed!\n" % (self.rank, j))
-            self.logger.debug("process %i: recv(%i) failed!" % (self.rank, j))
+            self.logger.log_a_value("process %i: recv(%i) failed!" % (self.rank, j), True)
             raise RuntimeError
         # self.log("process %i: recv(%i) starting...\n" % (self.rank, j))
-        self.logger.debug("process %i: recv(%i) starting..." % (self.rank, j))
+        self.logger.log_a_value("process %i: recv(%i) starting..." % (self.rank, j), True)
         try:
             size = int(os.read(self.pipes[j, self.rank][0], 10))
             s = os.read(self.pipes[j, self.rank][0], size)
         except Exception, e:
             # self.log("process %i: COMMUNICATION ERROR!!!\n" % (self.rank))
-            self.logger.debug("process %i: COMMUNICATION ERROR!!!" % self.rank)
+            self.logger.log_a_value("process %i: COMMUNICATION ERROR!!!" % self.rank, True)
             raise e
         data = cPickle.loads(s)
         # self.log("process %i: recv(%i) done.\n" % (self.rank, j))
-        self.logger.debug("process %i: recv(%i) done." % (self.rank, j))
+        self.logger.log_a_value("process %i: recv(%i) done." % (self.rank, j), True)
         return data
 
     def recv(self, j):
@@ -133,8 +133,8 @@ class PSim(object):
     def one2all_broadcast(self, source, value=None):
         # self.log("process %i: BEGIN one2all_broadcast(%i,%s)\n" % \
         # (self.rank, source, repr(value)))
-        self.logger.debug("process %i: BEGIN one2all_broadcast(%i,%s)" %
-                          (self.rank, source, repr(value)))
+        self.logger.log_a_value("process %i: BEGIN one2all_broadcast(%i,%s)" %
+                          (self.rank, source, repr(value)), True)
         if self.rank == source:
             for i in range(0, self.nprocs):
                 if i != source:
@@ -143,28 +143,28 @@ class PSim(object):
             value = self._recv(source)
         # self.log("process %i: END one2all_broadcast(%i,%s)\n" % \
         # (self.rank, source, repr(value)))
-        self.logger.debug("process %i: END one2all_broadcast(%i,%s)" %
-                          (self.rank, source, repr(value)))
+        self.logger.log_a_value("process %i: END one2all_broadcast(%i,%s)" %
+                          (self.rank, source, repr(value)), True)
         return value
 
     def all2all_broadcast(self, value):
         # self.log("process %i: BEGIN all2all_broadcast(%s)\n" % \
         # (self.rank, repr(value)))
-        self.logger.debug("process %i: BEGIN all2all_broadcast(%s)" %
-                          (self.rank, repr(value)))
+        self.logger.log_a_value("process %i: BEGIN all2all_broadcast(%s)" %
+                          (self.rank, repr(value)), True)
         vector = self.all2one_collect(0, value)
         vector = self.one2all_broadcast(0, vector)
         # self.log("process %i: END all2all_broadcast(%s)\n" % \
         #          (self.rank, repr(value)))
-        self.logger.debug("process %i: END all2all_broadcast(%s)" %
-                          (self.rank, repr(value)))
+        self.logger.log_a_value("process %i: END all2all_broadcast(%s)" %
+                          (self.rank, repr(value)), True)
         return vector
 
     def one2all_scatter(self, source, data):
         # self.log('process %i: BEGIN all2one_scatter(%i,%s)\n' % \
         # (self.rank, source, repr(data)))
-        self.logger.debug('process %i: BEGIN all2one_scatter(%i,%s)' %
-                          (self.rank, source, repr(data)))
+        self.logger.log_a_value('process %i: BEGIN all2one_scatter(%i,%s)' %
+                          (self.rank, source, repr(data)), True)
         if self.rank == source:
             h, reminder = divmod(len(data), self.nprocs)
             if reminder: h += 1
@@ -173,15 +173,15 @@ class PSim(object):
         vector = self._recv(source)
         # self.log('process %i: END all2one_scatter(%i,%s)\n' % \
         # (self.rank, source, repr(data)))
-        self.logger.debug('process %i: END all2one_scatter(%i,%s)' %
-                          (self.rank, source, repr(data)))
+        self.logger.log_a_value('process %i: END all2one_scatter(%i,%s)' %
+                          (self.rank, source, repr(data)), True)
         return vector
 
     def all2one_collect(self, destination, data):
         # self.log("process %i: BEGIN all2one_collect(%i,%s)\n" % \
         # (self.rank, destination, repr(data)))
-        self.logger.debug("process %i: BEGIN all2one_collect(%i,%s)" %
-                          (self.rank, destination, repr(data)))
+        self.logger.log_a_value("process %i: BEGIN all2one_collect(%i,%s)" %
+                          (self.rank, destination, repr(data)), True)
         self._send(destination, data)
         if self.rank == destination:
             vector = [self._recv(i) for i in range(self.nprocs)]
@@ -189,15 +189,15 @@ class PSim(object):
             vector = []
         # self.log("process %i: END all2one_collect(%i,%s)\n" % \
         #          (self.rank, destination, repr(data)))
-        self.logger.debug("process %i: END all2one_collect(%i,%s)" %
-                          (self.rank, destination, repr(data)))
+        self.logger.log_a_value("process %i: END all2one_collect(%i,%s)" %
+                          (self.rank, destination, repr(data)), True)
         return vector
 
     def all2one_reduce(self, destination, value, op=lambda a, b: a + b):
         # self.log("process %i: BEGIN all2one_reduce(%s)\n" % \
         # (self.rank, repr(value)))
-        self.logger.debug("process %i: BEGIN all2one_reduce(%s)" %
-                          (self.rank, repr(value)))
+        self.logger.log_a_value("process %i: BEGIN all2one_reduce(%s)" %
+                          (self.rank, repr(value)), True)
         self._send(destination, value)
         if self.rank == destination:
             result = reduce(op, [self._recv(i) for i in range(self.nprocs)])
@@ -205,21 +205,21 @@ class PSim(object):
             result = None
         # self.log("process %i: END all2one_reduce(%s)\n" % \
         #          (self.rank, repr(value)))
-        self.logger.debug("process %i: END all2one_reduce(%s)" %
-                          (self.rank, repr(value)))
+        self.logger.log_a_value("process %i: END all2one_reduce(%s)" %
+                          (self.rank, repr(value)), True)
         return result
 
     def all2all_reduce(self, value, op=lambda a, b: a + b):
         # self.log("process %i: BEGIN all2all_reduce(%s)\n" % \
         # (self.rank, repr(value)))
-        self.logger.debug("process %i: BEGIN all2all_reduce(%s)" %
-                          (self.rank, repr(value)))
+        self.logger.log_a_value("process %i: BEGIN all2all_reduce(%s)" %
+                          (self.rank, repr(value)), True)
         result = self.all2one_reduce(0, value, op)
         result = self.one2all_broadcast(0, result)
         # self.log("process %i: END all2all_reduce(%s)\n" % \
         #          (self.rank, repr(value)))
-        self.logger.debug("process %i: END all2all_reduce(%s)" %
-                          (self.rank, repr(value)))
+        self.logger.log_a_value("process %i: END all2all_reduce(%s)" %
+                          (self.rank, repr(value)), True)
         return result
 
     @staticmethod
@@ -240,106 +240,115 @@ class PSim(object):
 
     def barrier(self):
         # self.log("process %i: BEGIN barrier()\n" % (self.rank))
-        self.logger.debug("process %i: BEGIN barrier()" % self.rank)
+        self.logger.log_a_value("process %i: BEGIN barrier()" % self.rank, True)
         self.all2all_broadcast(0)
         # self.log("process %i: END barrier()\n" % (self.rank))
-        self.logger.debug("process %i: END barrier()" % self.rank)
+        self.logger.log_a_value("process %i: END barrier()" % self.rank, True)
         return
 
+
 def test():
-    comm=PSim(5,SWITCH)
-    if comm.rank==0: print 'start test'
-    a=sum(comm.all2all_broadcast(comm.rank))
+    comm = PSim(5, SWITCH)
+    if comm.rank == 0: print 'start test'
+    a = sum(comm.all2all_broadcast(comm.rank))
     comm.barrier()
-    b=comm.all2all_reduce(comm.rank)
-    if a!=10 or a!=b:
+    b = comm.all2all_reduce(comm.rank)
+    if a != 10 or a != b:
         print 'from process', comm.rank
         raise Exception
-    if comm.rank==0: print 'test passed'
+    if comm.rank == 0: print 'test passed'
 
-if __name__=='__main__': test()
 
-def scalar_product_test1(n,p):
+if __name__ == '__main__': test()
+
+
+def scalar_product_test1(n, p):
     import random
     from psim import PSim
+
     comm = PSim(p)
-    h = n/p
-    if comm.rank==0:
+    h = n / p
+    if comm.rank == 0:
         a = [random.random() for i in range(n)]
         b = [random.random() for i in range(n)]
-        for k in range(1,p):
-            comm.send(k, a[k*h:k*h+h])
-            comm.send(k, b[k*h:k*h+h])
+        for k in range(1, p):
+            comm.send(k, a[k * h:k * h + h])
+            comm.send(k, b[k * h:k * h + h])
     else:
         a = comm.recv(0)
         b = comm.recv(0)
-    scalar = sum(a[i]*b[i] for i in range(h))
+    scalar = sum(a[i] * b[i] for i in range(h))
     if comm.rank == 0:
-        for k in range(1,p):
+        for k in range(1, p):
             scalar += comm.recv(k)
         print scalar
     else:
-        comm.send(0,scalar)
+        comm.send(0, scalar)
 
-def scalar_product_test2(n,p):
+
+def scalar_product_test2(n, p):
     import random
     from psim import PSim
+
     comm = PSim(p)
     a = b = None
-    if comm.rank==0:
+    if comm.rank == 0:
         a = [random.random() for i in range(n)]
         b = [random.random() for i in range(n)]
-    a = comm.one2all_scatter(0,a)
-    b = comm.one2all_scatter(0,b)
+    a = comm.one2all_scatter(0, a)
+    b = comm.one2all_scatter(0, b)
 
-    scalar = sum(a[i]*b[i] for i in range(len(a)))
+    scalar = sum(a[i] * b[i] for i in range(len(a)))
 
-    scalar = comm.all2one_reduce(0,scalar)
+    scalar = comm.all2one_reduce(0, scalar)
     if comm.rank == 0:
         print scalar
 
 
 def mergesort(A, p=0, r=None):
     if r is None: r = len(A)
-    if p<r-1:
-        q = int((p+r)/2)
-        mergesort(A,p,q)
-        mergesort(A,q,r)
-        merge(A,p,q,r)
+    if p < r - 1:
+        q = int((p + r) / 2)
+        mergesort(A, p, q)
+        mergesort(A, q, r)
+        merge(A, p, q, r)
 
-def merge(A,p,q,r):
-    B,i,j = [],p,q
+
+def merge(A, p, q, r):
+    B, i, j = [], p, q
     while True:
-        if A[i]<=A[j]:
+        if A[i] <= A[j]:
             B.append(A[i])
-            i=i+1
+            i = i + 1
         else:
             B.append(A[j])
-            j=j+1
-        if i==q:
-            while j<r:
+            j = j + 1
+        if i == q:
+            while j < r:
                 B.append(A[j])
-                j=j+1
+                j = j + 1
             break
-        if j==r:
-            while i<q:
+        if j == r:
+            while i < q:
                 B.append(A[i])
-                i=i+1
+                i = i + 1
             break
-    A[p:r]=B
+    A[p:r] = B
 
-def mergesort_test(n,p):
+
+def mergesort_test(n, p):
     import random
     from psim import PSim
+
     comm = PSim(p)
-    if comm.rank==0:
+    if comm.rank == 0:
         data = [random.random() for i in range(n)]
-        comm.send(1, data[n/2:])
-        mergesort(data,0,n/2)
-        data[n/2:] = comm.recv(1)
-        merge(data,0,n/2,n)
+        comm.send(1, data[n / 2:])
+        mergesort(data, 0, n / 2)
+        data[n / 2:] = comm.recv(1)
+        merge(data, 0, n / 2, n)
         print data
     else:
         data = comm.recv(0)
         mergesort(data)
-        comm.send(0,data)
+        comm.send(0, data)

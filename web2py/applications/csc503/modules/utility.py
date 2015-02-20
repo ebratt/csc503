@@ -1,7 +1,7 @@
-import logging
-import requests                                 # to call api
-from requests.auth import HTTPBasicAuth         # to authenticate
 import os
+
+import requests  # to call api
+from requests.auth import HTTPBasicAuth  # to authenticate
 
 
 def check_args(argv):
@@ -27,25 +27,37 @@ def check_args(argv):
         raise Exception(e)
     return api_url, simulation_id, owner_id, session_id, algorithm_name
 
+
 def get_data(api_url, simulation_id):
-    auth = HTTPBasicAuth('api@api.com', 'pass')     # TODO: change this in prod
+    auth = HTTPBasicAuth('api@api.com', 'pass')  # TODO: change this in prod
     sim_input_get = requests.get(api_url + '/simulation/id/' +
                                  str(simulation_id) +
                                  '/input_data.json',
                                  auth=auth)
     import json
+
     sim_input_json = json.loads(sim_input_get.text)
     input_data_id = sim_input_json['content'][0]['input_data']
     input_data_get = requests.get(api_url +
-                                  '/input-data/id/' +       # why input-id?
+                                  '/input-data/id/' +  # why input-data and not input_data?
                                   str(input_data_id) +
-                                  '/input_value.json',
+                                  '.json',
                                   auth=auth)
     input_json = json.loads(input_data_get.text)
-    try:
+    input_data_type = input_json['content'][0]['input_data_type']
+    input_data = None
+    if input_data_type == 'int':
         input_data = int(input_json['content'][0]['input_value'][0])
-    except:
-        raise Exception('invalid input data')
+    if input_data_type == 'list':
+        try:
+            input_data = input_json['content'][0]['input_value']
+            input_data = [int(a) for a in input_data]
+        except:
+            try:
+                input_data = [a.encode('ascii', 'ignore') for a in input_data]
+            except:
+                print 'input_data:', input_data
+                raise Exception('invalid input data')
     return input_data, auth
 
 
@@ -59,9 +71,9 @@ def setup_files(simulation_id, owner_id, session_id, algorithm_name):
                   str(session_id) + '_' + \
                   '%s.png' % algorithm_name
     trajectorypngfilename = str(simulation_id) + '_' + \
-                  str(owner_id) + '_' + \
-                  str(session_id) + '_' + \
-                  '%s.png' % 'trajectory'
+                            str(owner_id) + '_' + \
+                            str(session_id) + '_' + \
+                            '%s.png' % 'trajectory'
     return logfile, pngfilename, trajectorypngfilename
 
 
@@ -75,4 +87,5 @@ def make_requests(api_url, auth, log_files, plot_files, upload_files, log_payloa
 def remove_files(logfile, pngfilename, trajectorypngfilename):
     os.remove(logfile)
     os.remove(pngfilename)
-    os.remove(trajectorypngfilename)
+    if os.path.exists(trajectorypngfilename):
+        os.remove(trajectorypngfilename)

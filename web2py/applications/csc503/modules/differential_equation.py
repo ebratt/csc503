@@ -8,18 +8,21 @@ import logging
 import timeit as ti
 import signal
 import sys
-from nlib import *
 from random import random
-import plot as plt
 
+from nlib import *
+
+import plot as plt
 from psim import *
 import log
 import utility
+
 
 input_data = None
 topology = SWITCH
 bases = []
 procs_list = ['serial', '2', '4', '8', '16']
+logger = None
 
 # input domain
 a = None  # time zero
@@ -32,7 +35,7 @@ fb = None  # 1 meter after b=1 seconds
 alpha = None  # g/mass/2
 
 # simulation parameters
-n = None        # this is the number of points used to estimate
+n = None  # this is the number of points used to estimate
 h = None
 
 
@@ -55,14 +58,14 @@ def plot(B):
 
 def serial_print(A):
     B = A[1:-1]
-    log.log_a_value('B is: %s' % B)
+    logger.log_a_value('B is: %s' % B)
     plot(B)
 
 
 def run_serial():
-    log.setup('serial', input_data)
-    A = [random() for k in range(n)]
-    log.log_a_value('A: %s' % A)
+    logger.setup('serial', input_data)
+    A = [random.random() for k in range(n)]
+    logger.log_a_value('A: %s' % A)
 
     for t in range(200):
         A = evolve(A)
@@ -71,24 +74,23 @@ def run_serial():
         if t % 10 == 0:
             serial_print(A)
         t += 1
-    log.log_a_value('A evolved is: %s' % A)
+    logger.log_a_value('A evolved is: %s' % A)
 
 
 def parallel_print(comm, A):
     B = A[1:-1]
     B = comm.all2one_collect(0, B)
     if comm.rank == 0:
-        log.log_a_value('B is: %s' % B)
+        logger.log_a_value('B is: %s' % B)
 
 
 def run_parallel(p):
-    l = logging.getLogger('root')  # TODO: import log into psim.py
-    comm = PSim(p, topology, l)
+    comm = PSim(p, topology, logger)
     root = 0
     if comm.rank == root:
-        log.setup('parallel (%s)' % p, input_data)
-        A = [random() for k in range(n)]
-        log.log_a_value('A is: %s' % A)
+        logger.setup('parallel (%s)' % p, input_data)
+        A = [random.random() for k in range(n)]
+        logger.log_a_value('A is: %s' % A)
     else:
         A = None
 
@@ -123,20 +125,15 @@ if __name__ == "__main__":
     canvas = Canvas()
     # check the command-line args
     api_url, simulation_id, owner_id, session_id, algorithm_name = utility.check_args(sys.argv)
-    print 'api_url:', api_url
-    print 'simulation_id:', simulation_id
-    print 'owner_id:', owner_id
-    print 'session_id:', session_id
-    print 'algorith_name:', algorithm_name
     # make the get calls
     input_data, auth = utility.get_data(api_url, simulation_id)
     # setup the files
     logfile, pngfilename, trajectorypngfilename = \
         utility.setup_files(simulation_id, owner_id, session_id, algorithm_name)
     # setup the logger
-    logger = log.setup_custom_logger('root', logfile, logging.INFO)
-    log.log_system_info()
-    log.log_a_value('main: START')
+    logger = log.psim2web2pyLogger('root', logfile, logging.INFO)
+    logger.log_system_info(algorithm_name)
+    logger.log_a_value('main: START')
     # input domain
     a = 0.0  # time zero
     b = 1.0  # time 1 second
@@ -149,7 +146,7 @@ if __name__ == "__main__":
 
     # simulation parameters
     # p = int(sys.argv[1])
-    n = input_data        # this is the number of points used to estimate
+    n = input_data  # this is the number of points used to estimate
     h = (b - a) / n
 
     # serial
@@ -184,9 +181,9 @@ if __name__ == "__main__":
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
     upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
-    log.log_a_value('log_payload: %s' % log_payload)
-    log.log_a_value('plot_payload: %s' % plot_payload)
-    log.log_a_value('main: END')
+    logger.log_a_value('log_payload: %s' % log_payload)
+    logger.log_a_value('plot_payload: %s' % plot_payload)
+    logger.log_a_value('main: END')
     # get the upload responses
     log_r, plot_r, upload_r = \
         utility.make_requests(api_url, auth, log_files, plot_files, upload_files,
