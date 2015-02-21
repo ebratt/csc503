@@ -16,7 +16,11 @@ scheduler.queue_task(floating_point_add, task_name='floating_point_add')
 
 Instructions:
  - Select the **Algorithm**
- - Select the **Input Data** (must be compatible with the algorithm)
+ - Select the **Input Upload** (must be compatible with the algorithm)
+    -- for example, the floating point add algorithm expects the number of random
+      doubles to add, so you must provide an integer value in the upload file
+    -- the merge-sort algorithm expects a list of sortable elements, like chars or
+      integers. They should be separated by commas in the upload file (just like a Python list).
  - Hit **Submit** (this will persist the data to the db)
  - Hit **Calculate** (this queues a task for the scheduler)
  - You will be re-directed to the Monitor and can view the status of the task
@@ -31,7 +35,7 @@ What you should see in the monitoring dashboard:
     """
 
     form = SQLFORM(db.simulation,
-                   fields=['algorithm', 'input_data'],
+                   fields=['algorithm', 'input_upload'],
                    submit_button='Calculate',
                    formstyle=mybootstrap)
     simulation_id = None
@@ -53,10 +57,6 @@ What you should see in the monitoring dashboard:
 
 def my_form_processing(form):
     algorithm_id = int(form.vars.algorithm)
-    input_id = int(form.vars.input_data)
-    query = db(db.input_data.algorithms.contains(algorithm_id)).select()
-    valid_input = [item.id for item in query]
-    for x in valid_input:
-        if x == input_id:
-            return
-    form.errors.input_data = 'Invalid input data!'
+    if form.vars.input_upload != '':
+        return
+    form.errors.input_upload = 'Please upload a file!'

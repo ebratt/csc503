@@ -9,6 +9,7 @@ import timeit as ti
 import signal
 from math import log as log2
 import sys
+
 import plot as plt
 import utility
 from psim import *
@@ -24,20 +25,20 @@ logger = None
 
 
 def merge(A, i, j, n):
-    (a,b,c) = (i,j,n)
+    (a, b, c) = (i, j, n)
     B = []
-    while i<b or j<c:
-        if i<b and j<c:
+    while i < b or j < c:
+        if i < b and j < c:
             if A[i] <= A[j]:
                 B.append(A[i])
-                i+=1
+                i += 1
             else:
                 B.append(A[j])
-                j+=1
-        elif i<b:
+                j += 1
+        elif i < b:
             B += A[i:b]
             i = b
-        elif j<c:
+        elif j < c:
             B += A[j:c]
             j = c
     A[a:c] = B
@@ -46,16 +47,16 @@ def merge(A, i, j, n):
 def mergesort(A):
     n = len(A)
     size = 2
-    while size<=n:
-        for k in range(0,n,size):
-            merge(A,k,k+size/2,k+size)
-        size = size*2
+    while size <= n:
+        for k in range(0, n, size):
+            merge(A, k, k + size / 2, k + size)
+        size = size * 2
     return A
 
 
 def run_parallel(p):
     A = data
-    source=0
+    source = 0
     n = len(A)
     l = logging.getLogger('root')
     comm = PSim(p, topology, logger)
@@ -63,33 +64,34 @@ def run_parallel(p):
         logger.setup('parallel (%s)' % p, input_data)
         logger.log_a_value('# processes       : %d' % p)
         logger.log_a_value('input data       : %s' % input_data)
-    x = log2(n/p,2)
-    assert int(x)==x
+    x = log2(n / p, 2)
+    assert int(x) == x
 
-    logger.log_a_value('%d scattering to all %s'% (comm.rank, A))
-    A = comm.one2all_scatter(source,A)
+    logger.log_a_value('%d scattering to all %s' % (comm.rank, A))
+    A = comm.one2all_scatter(source, A)
     mergesort(A)
 
     size = 2
-    while size<=p:
+    while size <= p:
         r = comm.rank % size
         if r == 0:
-            other = comm.rank + size/2
+            other = comm.rank + size / 2
             B = comm.recv(other)
             # l.debug(comm.rank,'receieved from',other,B)
             # l.info(comm.rank,'received from',other,B)
-            A = A+B
+            A = A + B
             z = len(A)
-            merge(A,0,z/2,z)
-        elif r == size/2:
-            other = comm.rank - size/2
-            comm.send(other,A)
-        size = size*2
+            merge(A, 0, z / 2, z)
+        elif r == size / 2:
+            other = comm.rank - size / 2
+            comm.send(other, A)
+        size = size * 2
         comm.barrier()
     if comm.rank == 0:
         logger.log_a_value('result           : %s' % A)
     else:
         os.kill(comm.pid, signal.SIGTERM)
+
 
 def run_serial():
     logger.setup('serial', input_data)
@@ -100,10 +102,15 @@ def run_serial():
 
 if __name__ == "__main__":
     # check the command-line args
-    api_url, simulation_id, owner_id, session_id, algorithm_name = utility.check_args(sys.argv)
+    api_url, \
+    download_url, \
+    simulation_id, \
+    owner_id, \
+    session_id, \
+    algorithm_name = utility.check_args(sys.argv)
 
     # make the get calls
-    input_data, auth = utility.get_data(api_url, simulation_id)
+    input_data, auth = utility.get_data(api_url, download_url, simulation_id)
 
     # setup the files
     logfile, pngfilename, trajectorypngfilename = \

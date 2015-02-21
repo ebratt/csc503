@@ -14,14 +14,14 @@ def index():
     scope = TableScope(dataset, db.simulation.algorithm, renderstyle=True)
     rows = scope.scoped_dataset.select(db.simulation.simulation_date,
                                        db.simulation.algorithm,
-                                       db.simulation.input_data,
+                                       db.simulation.input_upload,
                                        db.simulation_log.log_content,
                                        db.simulation_time_plot.plot_content,
                                        db.simulation_upload.upload_content,
                                        orderby=orderby_selector.orderby())
     headers = {'simulation.simulation_date': {'selected': True},
                'simulation.algorithm': {'selected': False},
-               'simulation.input_data': {'selected': False}
+               'simulation.input_upload': {'selected': False}
     }
     extracolumns = [{'label': A('Log', _href='#'),
                      'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_log.log_content)},
@@ -32,7 +32,7 @@ def index():
                     ]
     columns = [db.simulation.simulation_date,
                db.simulation.algorithm,
-               db.simulation.input_data,
+               db.simulation.input_upload,
                extracolumns[0]]
     table = SOLIDTABLE(rows,
                        columns=columns,

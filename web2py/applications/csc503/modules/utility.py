@@ -9,56 +9,45 @@ def check_args(argv):
     if api_url is None:
         e = Exception('no api url!')
         raise Exception(e)
-    simulation_id = int(argv[2]) or None
+    download_url = argv[2] or None
+    if download_url is None:
+        e = Exception('no download url!')
+        raise Exception(e)
+    simulation_id = int(argv[3]) or None
     if simulation_id is None:
         e = Exception('no simulation id!')
         raise Exception(e)
-    owner_id = argv[3] or None
+    owner_id = argv[4] or None
     if owner_id is None:
         e = Exception('no owner id!')
         raise Exception(e)
-    session_id = argv[4] or None
+    session_id = argv[5] or None
     if session_id is None:
         e = Exception('no session id!')
         raise Exception(e)
-    algorithm_name = argv[5] or None
+    algorithm_name = argv[6] or None
     if algorithm_name is None:
         e = Exception('no algorithm name!')
         raise Exception(e)
-    return api_url, simulation_id, owner_id, session_id, algorithm_name
+    return api_url, download_url, simulation_id, owner_id, session_id, algorithm_name
 
 
-def get_data(api_url, simulation_id):
+def get_data(api_url, download_url, simulation_id):
     auth = HTTPBasicAuth('api@api.com', 'pass')  # TODO: change this in prod
     sim_input_get = requests.get(api_url + '/simulation/id/' +
                                  str(simulation_id) +
-                                 '/input_data.json',
+                                 '/input_upload.json',
                                  auth=auth)
     import json
 
     sim_input_json = json.loads(sim_input_get.text)
-    input_data_id = sim_input_json['content'][0]['input_data']
-    input_data_get = requests.get(api_url +
-                                  '/input-data/id/' +  # why input-data and not input_data?
-                                  str(input_data_id) +
-                                  '.json',
+    input_upload_filename = sim_input_json['content'][0]['input_upload']
+    input_upload_file = requests.get(download_url + '/' +
+                                  input_upload_filename,
                                   auth=auth)
-    input_json = json.loads(input_data_get.text)
-    input_data_type = input_json['content'][0]['input_data_type']
-    input_data = None
-    if input_data_type == 'int':
-        input_data = int(input_json['content'][0]['input_value'][0])
-    if input_data_type == 'list':
-        try:
-            input_data = input_json['content'][0]['input_value']
-            input_data = [int(a) for a in input_data]
-        except:
-            try:
-                input_data = [a.encode('ascii', 'ignore') for a in input_data]
-            except:
-                print 'input_data:', input_data
-                raise Exception('invalid input data')
-    return input_data, auth
+    import re
+    input_list = re.sub('\n', '', input_upload_file.text.encode('ascii')).split(',')
+    return input_list, auth
 
 
 def setup_files(simulation_id, owner_id, session_id, algorithm_name):

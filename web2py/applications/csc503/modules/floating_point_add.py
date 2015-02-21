@@ -59,10 +59,16 @@ def run_parallel(p):
 
 if __name__ == "__main__":
     # check the command-line args
-    api_url, simulation_id, owner_id, session_id, algorithm_name = utility.check_args(sys.argv)
+    api_url, \
+    download_url, \
+    simulation_id, \
+    owner_id, \
+    session_id, \
+    algorithm_name = utility.check_args(sys.argv)
 
     # make the get calls
-    input_data, auth = utility.get_data(api_url, simulation_id)
+    input_data, auth = utility.get_data(api_url, download_url, simulation_id)
+    input_data = int(input_data[0])
 
     # setup the files
     logfile, pngfilename, trajectorypngfilename = \

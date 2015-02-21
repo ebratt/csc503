@@ -30,18 +30,15 @@ def simulation(*args, **vars):
     owner_id = args[1]
     session_id = args[2]
     algorithm = args[3]
-    # log_api_url = URL('default', 'api', args=['simulation_log'], user_signature=True, scheme=True)
-    # plot_api_url = URL('default', 'api', args=['simulation_plot'], user_signature=True, scheme=True)
-    log_api_url = URL('default', 'api', args=['simulation_log'], scheme=True)
-    plot_api_url = URL('default', 'api', args=['simulation_plot'], scheme=True)
     module_folder = os.path.join(request.folder, 'modules/')
-    temp_folder = os.path.join(request.folder, 'private/temp/')
     api_url = URL('default', 'api', scheme=True)
+    download_url = URL('default', 'download', scheme=True)
     status = subprocess.call([module_folder + 'simulation.sh',          # $0
                               module_folder,                            # $1
                               api_url,                                  # $2
-                              simulation_id,                            # $3
-                              owner_id,                                 # $4
-                              session_id,                               # $5
-                              algorithm])                               # $6
+                              download_url,                             # $3
+                              simulation_id,                            # $4
+                              owner_id,                                 # $5
+                              session_id,                               # $6
+                              algorithm])                               # $7
     return dict(status=status)

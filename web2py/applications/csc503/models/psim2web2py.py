@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import random
 import datetime
 
 db.define_table('algorithm',
@@ -7,17 +6,10 @@ db.define_table('algorithm',
                 Field('Description', 'text'),
                 format='%(Name)s')
 
-db.define_table('input_data',
-                Field('input_value', 'list:string'),
-                Field('algorithms', 'list:reference algorithm'),
-                Field('input_data_type', 'string', requires=IS_IN_SET(['int','list'])),
-                Field('description', 'string'),
-                format='%(input_value)s-%(description)s')
-
 db.define_table('simulation',
                 Field('simulation_date', 'datetime', writable=False, default=datetime.datetime.today()),
-                Field('algorithm', 'reference algorithm'),
-                Field('input_data', 'reference input_data'),
+                Field('algorithm', 'reference algorithm', required=True),
+                Field('input_upload', 'upload', required=True),
                 Field('simulation_owner', 'reference auth_user', default=auth.user_id, readable=False),
                 format='date: %(simulation_date)s; algorithm: %(algorithm)s')
 
@@ -43,31 +35,31 @@ db.define_table('simulation_upload',
 def check_initialize():
     if not db().select(db.auth_user.ALL).first():
         admin_id = db.auth_user.insert(
-            password = db.auth_user.password.validate('admin')[0],
-            email = 'admin@admin.com',
-            first_name = 'admin',
-            last_name = 'admin'
+            password=db.auth_user.password.validate('admin')[0],
+            email='admin@admin.com',
+            first_name='admin',
+            last_name='admin'
         )
         db.commit()
         api_id = db.auth_user.insert(
-            password = db.auth_user.password.validate('pass')[0],
-            email = 'api@api.com',
-            first_name = 'api',
-            last_name = 'api'
+            password=db.auth_user.password.validate('pass')[0],
+            email='api@api.com',
+            first_name='api',
+            last_name='api'
         )
         db.commit()
     if not db().select(db.auth_group.ALL).first():
         admin_group_id = db.auth_group.insert(role='admin',
-                             description='reserved for admins')
+                                              description='reserved for admins')
         db.commit()
         api_group_id = db.auth_group.insert(role='api',
-                             description='reserved for api calls')
+                                            description='reserved for api calls')
         db.commit()
-        db.auth_membership.insert(user_id = admin_id,
-                                  group_id = admin_group_id)
+        db.auth_membership.insert(user_id=admin_id,
+                                  group_id=admin_group_id)
         db.commit()
-        db.auth_membership.insert(user_id = api_id,
-                                  group_id = api_group_id)
+        db.auth_membership.insert(user_id=api_id,
+                                  group_id=api_group_id)
         db.commit()
 
     # if the algorithm table is empty, populate it with data
@@ -92,48 +84,6 @@ def check_initialize():
         db.algorithm.insert(Name='differential_equation',
                             Description=desc)
         db.commit()
-
-    # populate the table if it is empty
-    if db(db.input_data).isempty():
-        random.seed(12345)
-        input_value = random.randint(0, 1000000)
-        algorithms = db.executesql('SELECT id FROM algorithm where Name == "floating_point_add";')
-        algorithms = [x for (x, ) in algorithms]
-        description = 'Number of random integers to add'
-        db.input_data.insert(input_value=input_value,
-                             algorithms=algorithms,
-                             input_data_type='int',
-                             description=description)
-        db.commit()
-        input_value = [random.randint(0, 16) for r in xrange(16)]
-        algorithms = db.executesql('SELECT id FROM algorithm where Name == "merge_sort" OR Name == "bubble_sort";')
-        algorithms = [x for (x, ) in algorithms]
-        description = 'List of things to sort'
-        # algorithms = db((db.algorithm.Name=='merge_sort') | (db.algorithm.Name=='bubble_sort')).select().id
-        db.input_data.insert(input_value=input_value,
-                             algorithms=algorithms,
-                             input_data_type='list',
-                             description=description)
-        db.commit()
-        input_value = [chr(random.randint(97, 122)) for r in xrange(97, 123)] + \
-                      [chr(random.randint(97, 103)) for r in xrange(97, 103)]
-        description = 'List of things to sort'
-        db.input_data.insert(input_value=input_value,
-                             algorithms=algorithms,
-                             input_data_type='list',
-                             description=description)
-        db.commit()
-        algorithms = db.executesql('SELECT id FROM algorithm where Name == "differential_equation";')
-        algorithms = [x for (x, ) in algorithms]
-        description = 'Number of derivative steps'
-        for i in xrange(10, 20):
-            input_value = [i]
-            db.input_data.insert(input_value=input_value,
-                                 algorithms=algorithms,
-                                 input_data_type='int',
-                                 description=description)
-            db.commit()
-
 
 
 # do initialization check
