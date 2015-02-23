@@ -10,6 +10,7 @@ db.define_table('simulation',
                 Field('simulation_date', 'datetime', writable=False, default=datetime.datetime.today()),
                 Field('algorithm', 'reference algorithm', required=True),
                 Field('input_upload', 'upload', required=True),
+                Field('log_level', 'string', required=True, requires=IS_IN_SET(['INFO', 'DEBUG']), default='INFO'),
                 Field('simulation_owner', 'reference auth_user', default=auth.user_id, readable=False),
                 format='date: %(simulation_date)s; algorithm: %(algorithm)s')
 

@@ -650,6 +650,7 @@ class Scheduler(MetaScheduler):
             Field('times_failed', 'integer', default=0, writable=False),
             Field('last_run_time', 'datetime', writable=False, readable=False),
             Field('assigned_worker_name', default='', writable=False),
+            Field('scheduler_task_owner', 'integer', readable=False),
             on_define=self.set_requirements,
             migrate=self.__get_migrate('scheduler_task', migrate),
             format='%(task_name)s')
@@ -1290,6 +1291,7 @@ class Scheduler(MetaScheduler):
         tvars = 'vars' in kwargs and kwargs.pop('vars') or dumps(pvars)
         tuuid = 'uuid' in kwargs and kwargs.pop('uuid') or web2py_uuid()
         tname = 'task_name' in kwargs and kwargs.pop('task_name') or function
+        towner = 'scheduler_task_owner' in kwargs and kwargs.pop('scheduler_task_owner') or auth.user_id
         immediate = 'immediate' in kwargs and kwargs.pop('immediate') or None
         rtn = self.db.scheduler_task.validate_and_insert(
             function_name=function,
@@ -1297,6 +1299,7 @@ class Scheduler(MetaScheduler):
             args=targs,
             vars=tvars,
             uuid=tuuid,
+            scheduler_task_owner=towner,
             **kwargs)
         if not rtn.errors:
             rtn.uuid = tuuid

@@ -107,7 +107,8 @@ if __name__ == "__main__":
     simulation_id, \
     owner_id, \
     session_id, \
-    algorithm_name = utility.check_args(sys.argv)
+    algorithm_name, \
+    log_level = utility.check_args(sys.argv)
 
     # make the get calls
     input_data, auth = utility.get_data(api_url, download_url, simulation_id)
@@ -117,7 +118,11 @@ if __name__ == "__main__":
         utility.setup_files(simulation_id, owner_id, session_id, algorithm_name)
 
     # setup the logger
-    logger = log.psim2web2pyLogger('root', logfile, logging.INFO)
+    if log_level == 'INFO':
+        log_level = logging.INFO
+    if log_level == 'DEBUG':
+        log_level = logging.DEBUG
+    logger = log.psim2web2pyLogger('root', logfile, log_level)
     logger.log_system_info(algorithm_name)
     logger.log_a_value('main: START')
 

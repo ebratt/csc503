@@ -1,10 +1,10 @@
-
 <div class="panel panel-primary">
   <div class="panel-heading">
     <h3 class="panel-title">Tasks Details</h3>
   </div>
   <div class="panel-body">
         <div class="btn-toolbar" role="toolbar">
+            {{if auth.has_membership('admin'):}}
             <div class="btn-group" id="tasks_actions">
                 <button class="btn btn-default" id="tasks_all_toggler">Toggle</button>
                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -14,10 +14,11 @@
                     <li><a href="#" data-action="disable">Disable</a></li>
                     <li><a href="#" data-action="enable">Enable</a></li>
                     <li><a href="#" data-action="delete">Delete</a></li>
-                    <li><a href="#" data-action="clone">Clone (and Requeue)</a></li>
+                    <!--<li><a href="#" data-action="clone">Clone (and Requeue)</a></li>-->
                     <li><a href="#" data-action="stop">Stop</a></li>
                 </ul>
             </div>
+            {{pass}}
             <div class="btn-group">
                 <div class="input-group">
                   {{into = request.args(1) and "%s, %s" % (request.args(0), request.args(1)) or request.args(0)}}
@@ -48,12 +49,19 @@
                 <th data-sort="string">Stop Time</th>
                 <th data-sort="string">Run #</th>
                 <th data-sort="string">Failed #</th>
+                {{if auth.has_membership('admin'):}}
+                    <th data-sort="string">Owner ID</th>
+                {{pass}}
             </tr>
         </thead>
         <tbody>
             {{for t_ in tasks:}}
             <tr>
-                <td>{{=INPUT(_type="checkbox", _name="t_records", _value=t_.id, value=request.vars.t_records)}}</td>
+                {{if auth.has_membership('admin'):}}
+                    <td>{{=INPUT(_type="checkbox", _name="t_records", _value=t_.id, value=request.vars.t_records)}}</td>
+                {{else:}}
+                    <td></td>
+                {{pass}}
                 <td>{{=t_.task_name}}</td>
                 <td>{{=t_.status_}}</td>
                 <td>{{=t_.function_name}}</td>
@@ -63,6 +71,9 @@
                 <td>{{=t_.stop_time}}</td>
                 <td>{{=t_.times_run}}</td>
                 <td>{{=t_.times_failed}}</td>
+                {{if auth.has_membership('admin'):}}
+                    <td>{{=t_.scheduler_task_owner}}</td>
+                {{pass}}
             </tr>
             {{pass}}
         </tbody>

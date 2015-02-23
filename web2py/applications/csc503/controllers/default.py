@@ -20,19 +20,25 @@ def index():
                                        db.simulation_upload.upload_content,
                                        orderby=orderby_selector.orderby())
     headers = {'simulation.simulation_date': {'selected': True},
-               'simulation.algorithm': {'selected': False},
-               'simulation.input_upload': {'selected': False}
+               'simulation.algorithm': {'selected': False}
     }
-    extracolumns = [{'label': A('Log', _href='#'),
-                     'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_log.log_content)},
+    extracolumns = [{'label': A('Input', _href='#'),
+                     'content': lambda row, rc: A(IMG(_src=URL('static', 'images/text_file_icon.jpg')),
+                                                  _href='download/%s' % row.simulation.input_upload)},
+                    {'label': A('Log', _href='#'),
+                     'content': lambda row, rc: A(IMG(_src=URL('static', 'images/text_file_icon.jpg')),
+                                                  _href='download/%s' % row.simulation_log.log_content)},
                     {'label': A('Run-Time Plot', _href='#'),
-                     'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_time_plot.plot_content)},
+                     'content': lambda row, rc: A(IMG(_src=URL('download/%s' % row.simulation_time_plot.plot_content),
+                                                      _width=20, _height=20),
+                                                  _href='download/%s' % row.simulation_time_plot.plot_content)},
                     {'label': A('Other Upload', _href='#'),
-                     'content': lambda row, rc: A('Download', _href='download/%s' % row.simulation_upload.upload_content)},
+                     'content': lambda row, rc: A(IMG(_src=URL('download/%s' % row.simulation_upload.upload_content),
+                                                      _width=20, _height=20),
+                                                  _href='download/%s' % row.simulation_upload.upload_content)},
                     ]
     columns = [db.simulation.simulation_date,
                db.simulation.algorithm,
-               db.simulation.input_upload,
                extracolumns[0]]
     table = SOLIDTABLE(rows,
                        columns=columns,

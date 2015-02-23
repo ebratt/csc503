@@ -1,20 +1,24 @@
 {{extend 'plugin_cs_monitor/layout.html'}}
 <h3 class="sub-header">Task</h3>
 
+{{if auth.has_membership('admin'):}}
 <div class="btn-toolbar" role="toolbar">
-    <div class="btn-group">
+    <!--<div class="btn-group">
         {{=A("Create New", _class="btn btn-success", _href=URL('edit_task', args=[task.id, 'new'], user_signature=True))}}
         {{=A("Edit", _class="btn btn-info", _href=URL('edit_task', args=task.id, user_signature=True))}}
         {{=A("Delete", _class="btn btn-danger", _href=URL('edit_task', args=[task.id, 'delete'], user_signature=True))}}
-    </div>
+    </div>-->
     <div class="btn-group">
+        {{=A("Delete", _class="btn btn-danger", _href=URL('edit_task', args=[task.id, 'delete'], user_signature=True))}}
+    </div>
+    <!--<div class="btn-group">
         {{=A("Clone and Requeue", _class="btn btn-warning", _href=URL('edit_task', args=[task.id, 'clone'], user_signature=True))}}
         {{if task.status != 'STOPPED':}}
             {{=A("Stop Task", _class="btn btn-danger", _href=URL('edit_task', args=[task.id, 'stop'], user_signature=True))}}
         {{else:}}
             {{=A("Requeue", _class="btn btn-danger", _href=URL('edit_task', args=[task.id, 'requeue'], user_signature=True))}}
         {{pass}}
-    </div>
+    </div>-->
     <div class="btn-group">
         {{=A("Analyze", _class="btn btn-primary", _href=URL('analyze_task', args=task.id, user_signature=True))}}
     </div>
@@ -26,6 +30,7 @@
     </div>
     {{pass}}
 </div>
+{{pass}}
 
 <table class="task_details table table-condensed table-hover table-bordered">
     {{fields = [a for a in st.fields]}}

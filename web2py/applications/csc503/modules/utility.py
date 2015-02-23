@@ -29,7 +29,11 @@ def check_args(argv):
     if algorithm_name is None:
         e = Exception('no algorithm name!')
         raise Exception(e)
-    return api_url, download_url, simulation_id, owner_id, session_id, algorithm_name
+    log_level = argv[7] or None
+    if log_level is None:
+        e = Exception('no logging level!')
+        raise Exception(e)
+    return api_url, download_url, simulation_id, owner_id, session_id, algorithm_name, log_level
 
 
 def get_data(api_url, download_url, simulation_id):

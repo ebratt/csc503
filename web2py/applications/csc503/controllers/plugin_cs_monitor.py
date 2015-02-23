@@ -9,9 +9,10 @@ from gluon.tools import prettydate
 from plugin_cs_monitor.html_helpers import nice_worker_status, graph_colors_task_status
 from plugin_cs_monitor.html_helpers import nice_worker_stats, nice_task_status, mybootstrap
 from plugin_cs_monitor.html_helpers import fixup_bs3_widgets
-from plugin_cs_monitor.scheduler_helpers import requeue_task
+# from plugin_cs_monitor.scheduler_helpers import requeue_task
 from gluon.scheduler import JobGraph
 from collections import defaultdict
+import json
 
 response.files.append(URL('static', 'plugin_cs_monitor/js/stupidtable/stupidtable.min.js'))
 
@@ -150,17 +151,17 @@ def tactions():
         else:
             session.flash = "No tasks deleted"
         redirect(default)
-    elif action == 'clone':
-        requeued = []
-        tasks = dbs(st.id.belongs(t)).select()
-        for row in tasks:
-            res = requeue_task(st, row)
-            if res:
-                requeued.append(requeued)
-        if requeued:
-            session.flash = "%s tasks successfully requeued" % (len(requeued))
-        else:
-            session.flash = "Cloning failed"
+    # elif action == 'clone':
+    #     requeued = []
+    #     tasks = dbs(st.id.belongs(t)).select()
+    #     for row in tasks:
+    #         res = requeue_task(st, row)
+    #         if res:
+    #             requeued.append(requeued)
+    #     if requeued:
+    #         session.flash = "%s tasks successfully requeued" % (len(requeued))
+    #     else:
+    #         session.flash = "Cloning failed"
     elif action == 'stop':
         stopped = []
         tasks = dbs(st.id.belongs(t)).select()
@@ -185,9 +186,11 @@ def tasks():
 
 
 def cache_tasks_counts(t):
-
+    q = t.id > 0
+    if auth.has_membership('admin') == False:
+        q = q & (t.scheduler_task_owner == auth.user_id)
     if GROUPING_MODE == 'python':
-        res = dbs(t.id > 0).select(t.group_name, t.status, orderby=t.group_name|t.status, **TASKS_SUMMARY_KWARGS)
+        res = dbs(q).select(t.group_name, t.status, orderby=t.group_name|t.status, **TASKS_SUMMARY_KWARGS)
         rtn = {}
         for row in res:
             k = row.group_name
@@ -198,8 +201,8 @@ def cache_tasks_counts(t):
             else:
                 rtn[k][s]['count'] += 1
     else:
-        c = t.id.count()
-        res = dbs(t.id > 0).select(c, t.group_name, t.status, groupby=t.group_name|t.status, **TASKS_SUMMARY_KWARGS)
+        c = t.id.count(q)
+        res = dbs(q).select(c, t.group_name, t.status, groupby=t.group_name|t.status, **TASKS_SUMMARY_KWARGS)
         rtn = Storage()
         for row in res:
             k = row.scheduler_task.group_name
@@ -225,7 +228,12 @@ def task_group():
     except ValueError:
         page = 0
     limitby = (paginate * page, paginate * (page + 1))
-    q = (st.group_name == group_name)
+    # if I'm not an admin, only show those that I own
+    if auth.has_membership('admin') == False:
+        q = (st.scheduler_task_owner == auth.user_id)
+        q = q & (st.group_name == group_name)
+    else:
+        q = (st.group_name == group_name)
     if status:
         q = q & (st.status == status)
         if group_name in c and status in c[group_name]:
@@ -338,28 +346,28 @@ def edit_task():
         else:
             session.flash = 'Nothing to do...'
         redirect(URL('task_details', args=task.id, user_signature=True))
-    elif request.args(1) == 'clone':
-        result = requeue_task(st, task)
-        if result:
-            session.flash = 'Task requeued correctly'
-            redirect(URL('task_details', args=result, user_signature=True))
-        else:
-            session.flash = 'Task clone failed'
-            redirect(URL('edit_task', args=task_id, user_signature=True))
-    elif request.args(1) == 'new':
-        if task_id != 0:
-            st.function_name.default = task.function_name
-            st.task_name.default = task.task_name
-            st.group_name.default = task.group_name
-    elif request.args(1) == 'requeue':
-        result = requeue_task(st, task, clone=False)
-        if result:
-            session.flash = 'Task requeued correctly'
-            redirect(URL('task_details', args=result, user_signature=True))
-        else:
-            session.flash = 'Task requeue failed'
-            redirect(URL('edit_task', args=task_id, user_signature=True))
-        task = None
+    # elif request.args(1) == 'clone':
+    #     result = requeue_task(st, task)
+    #     if result:
+    #         session.flash = 'Task requeued correctly'
+    #         redirect(URL('task_details', args=result, user_signature=True))
+    #     else:
+    #         session.flash = 'Task clone failed'
+    #         redirect(URL('edit_task', args=task_id, user_signature=True))
+    # elif request.args(1) == 'new':
+    #     if task_id != 0:
+    #         st.function_name.default = task.function_name
+    #         st.task_name.default = task.task_name
+    #         st.group_name.default = task.group_name
+    # elif request.args(1) == 'requeue':
+    #     result = requeue_task(st, task, clone=False)
+    #     if result:
+    #         session.flash = 'Task requeued correctly'
+    #         redirect(URL('task_details', args=result, user_signature=True))
+    #     else:
+    #         session.flash = 'Task requeue failed'
+    #         redirect(URL('edit_task', args=task_id, user_signature=True))
+    #     task = None
 
     fixup_bs3_widgets(SQLFORM)
 

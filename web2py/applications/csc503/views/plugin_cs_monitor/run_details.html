@@ -21,7 +21,9 @@
         <table id="run_details" class="table table-condensed table-hover">
             <thead>
                 <tr>
-                    <th></th>
+                    {{if auth.has_membership('admin'):}}
+                        <th></th>
+                    {{pass}}
                     <th data-sort="string">Task id</th>
                     <th data-sort="string">Status</th>
                     <th data-sort="string">Start Time</th>
@@ -36,7 +38,9 @@
             <tbody>
                 {{for r_ in runs:}}
                 <tr>
+                    {{if auth.has_membership('admin'):}}
                     <td>{{=INPUT(_type="checkbox", _name="r_records", _value=r_.id, value=request.vars.r_records)}}</td>
+                    {{pass}}
                     <td>{{=r_.task_id}}</td>
                     <td>{{=r_.status_}}</td>
                     <td>{{=r_.start_time}}</td>

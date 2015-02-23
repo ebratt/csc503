@@ -30,6 +30,7 @@ def simulation(*args, **vars):
     owner_id = args[1]
     session_id = args[2]
     algorithm = args[3]
+    log_level = args[4]
     module_folder = os.path.join(request.folder, 'modules/')
     api_url = URL('default', 'api', scheme=True)
     download_url = URL('default', 'download', scheme=True)
@@ -40,5 +41,6 @@ def simulation(*args, **vars):
                               simulation_id,                            # $4
                               owner_id,                                 # $5
                               session_id,                               # $6
-                              algorithm])                               # $7
+                              algorithm,                                # $7
+                              log_level])                               # $8
     return dict(status=status)

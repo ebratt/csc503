@@ -5,7 +5,7 @@ import datetime
 
 
 def requeue_task(st, orig_task, clone=True):
-    FCOPY = ['task_name', 'group_name', 'function_name',
+    FCOPY = ['task_name', 'group_name', 'function_name', 'scheduler_task_owner',
              'args', 'vars', 'enabled', 'start_time',
              'stop_time', 'repeats', 'retry_failed',
              'period', 'timeout', 'sync_output',

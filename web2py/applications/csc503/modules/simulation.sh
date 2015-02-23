@@ -8,4 +8,5 @@
 #echo $5 >> test.out      # sys.argv[4]; owner_id
 #echo $6 >> test.out      # sys.argv[5]; session_id
 #echo $7 >> test.out      # sys.argv[6]: algorithm name
-python $1$7.py $2 $3 $4 $5 $6 $7
+#echo $8 >> test.out      # sys.argv[7]: logging level
+python $1$7.py $2 $3 $4 $5 $6 $7 $8

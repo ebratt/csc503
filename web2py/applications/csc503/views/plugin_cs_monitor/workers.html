@@ -16,7 +16,9 @@
         <tbody>
             {{for w_, props in sorted(w.iteritems()):}}
             <tr>
+                {{if auth.has_membership('admin'):}}
                 <td>{{=INPUT(_type="checkbox", _name="w_records", _value=w_, value=request.vars.w_records)}}</td>
+                {{pass}}
                 <td>
                     <div class="worker_stats">
                         <div class="list-group">
@@ -35,6 +37,7 @@
     </table>
     <div class="panel-footer">
         <div class="btn-toolbar" role="toolbar">
+            {{if auth.has_membership('admin'):}}
             <div class="btn-group dropup" id="worker_actions">
                 <button class="btn btn-default" id="worker_all_toggler">Toggle</button>
                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -47,6 +50,7 @@
                     <li><a href="#" data-action="KILL">Kill</a></li>
                 </ul>
             </div>
+            {{pass}}
             <div class="btn-group">
                 <button id="workers_autorefresh" type="button" class="btn btn-primary">Auto-Refresh <span class="glyphicon"></span></button>
             </div>

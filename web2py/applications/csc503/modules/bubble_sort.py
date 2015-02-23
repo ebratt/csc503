@@ -1,60 +1,88 @@
-# -*- coding: utf-8 -*-
+"""
+Created by Eric Bratt, 2015
+algorithm taken from
+http://interactivepython.org/runestone/static/pythonds/SortSearch/TheBubbleSort.html#lst-shortbubble
+"""
 
-import random
 import logging
 import timeit as ti
 import signal
-from psim import *
-import log
+from math import log as log2
 import sys
+
 import plot as plt
 import utility
+from psim import *
+import log
+
 
 input_data = None
+data = None
 topology = SWITCH
 bases = []
-procs_list = ['serial', '2', '3', '4', '6']
+procs_list = ['serial', '2', '4', '8', '16']
 logger = None
+
+
+def bubble_sort(alist):
+    exchanges = True
+    passnum = len(alist)-1
+    while passnum > 0 and exchanges:
+       exchanges = False
+       for i in range(passnum):
+           if alist[i]>alist[i+1]:
+               exchanges = True
+               temp = alist[i]
+               alist[i] = alist[i+1]
+               alist[i+1] = temp
+       passnum = passnum-1
+    return alist
+
+
+def run_parallel(p):
+    A = data
+    source = 0
+    n = len(A)
+    l = logging.getLogger('root')
+    comm = PSim(p, topology, logger)
+    if comm.rank == source:
+        logger.setup('parallel (%s)' % p, input_data)
+        logger.log_a_value('# processes       : %d' % p)
+        logger.log_a_value('input data       : %s' % input_data)
+    x = log2(n / p, 2)
+    assert int(x) == x
+
+    logger.log_a_value('%d scattering to all %s' % (comm.rank, A))
+    A = comm.one2all_scatter(source, A)
+    bubble_sort(A)
+
+    size = 2
+    while size <= p:
+        r = comm.rank % size
+        if r == 0:
+            other = comm.rank + size / 2
+            B = comm.recv(other)
+            # l.debug(comm.rank,'receieved from',other,B)
+            # l.info(comm.rank,'received from',other,B)
+            A = A + B
+            z = len(A)
+            bubble_sort(A)
+        elif r == size / 2:
+            other = comm.rank - size / 2
+            comm.send(other, A)
+        size = size * 2
+        comm.barrier()
+    if comm.rank == 0:
+        logger.log_a_value('result           : %s' % A)
+    else:
+        os.kill(comm.pid, signal.SIGTERM)
 
 
 def run_serial():
     logger.setup('serial', input_data)
-    a = [random.random() for _ in range(input_data)]
-    b = [random.random() for _ in range(input_data)]
-    head = min(input_data, 5)
-    scalar = sum(a[i] * b[i] for i in range(input_data))
-    logger.log_a_value('head of a         : %s' % a[:head])
-    logger.log_a_value('head of b         : %s' % b[:head])
-    logger.log_a_value('data size         : %d' % input_data)
-    logger.log_a_value('result            : %f' % scalar)
-
-
-def run_parallel(p):
-    comm = PSim(p, topology, logger)
-    h = input_data / p
-    if comm.rank == 0:
-        logger.setup('parallel (%s)' % p, input_data)
-        head = min(input_data, 5)
-        a = [random.random() for _ in range(input_data)]
-        b = [random.random() for _ in range(input_data)]
-        logger.log_a_value('head of a         : %s' % a[:head])
-        logger.log_a_value('head of b         : %s' % b[:head])
-        logger.log_a_value('data size         : %d' % input_data)
-        logger.log_a_value('# processes       : %f' % p)
-        for k in range(1, p):
-            comm.send(k, a[k * h:k * h + h])
-            comm.send(k, b[k * h:k * h + h])
-    else:
-        a = comm.recv(0)
-        b = comm.recv(0)
-    scalar = sum(a[i] * b[i] for i in range(h))
-    if comm.rank == 0:
-        for k in range(1, p):
-            scalar += comm.recv(k)
-        logger.log_a_value('result            : %f' % scalar)
-    else:
-        comm.send(0, scalar)
-        os.kill(comm.pid, signal.SIGTERM)
+    logger.log_a_value('input data       : %s' % input_data)
+    result = bubble_sort(data)
+    logger.log_a_value('result           : %s' % result)
 
 
 if __name__ == "__main__":
@@ -69,13 +97,12 @@ if __name__ == "__main__":
 
     # make the get calls
     input_data, auth = utility.get_data(api_url, download_url, simulation_id)
-    input_data = int(input_data[0])
 
     # setup the files
     logfile, pngfilename, trajectorypngfilename = \
         utility.setup_files(simulation_id, owner_id, session_id, algorithm_name)
 
-   # setup the logger
+    # setup the logger
     if log_level == 'INFO':
         log_level = logging.INFO
     if log_level == 'DEBUG':
@@ -84,26 +111,31 @@ if __name__ == "__main__":
     logger.log_system_info(algorithm_name)
     logger.log_a_value('main: START')
 
-    # serial
+    data = [i for i in input_data]
     bases.append(ti.timeit(stmt='run_serial()',
                            setup='from __main__ import run_serial',
                            number=1))
+    data = [i for i in input_data]
     # parallel with 2 processors
     bases.append(ti.timeit(stmt='run_parallel(2)',
                            setup='from __main__ import run_parallel',
                            number=1))
+    data = [i for i in input_data]
     # parallel with 4 processors
-    bases.append(ti.timeit(stmt='run_parallel(3)',
-                           setup='from __main__ import run_parallel',
-                           number=1))
-    # parallel with 8 processors
     bases.append(ti.timeit(stmt='run_parallel(4)',
                            setup='from __main__ import run_parallel',
                            number=1))
-    # parallel with 16 processors
-    bases.append(ti.timeit(stmt='run_parallel(6)',
+    data = [i for i in input_data]
+    # parallel with 8 processors
+    bases.append(ti.timeit(stmt='run_parallel(8)',
                            setup='from __main__ import run_parallel',
                            number=1))
+    data = [i for i in input_data]
+    # parallel with 16 processors
+    bases.append(ti.timeit(stmt='run_parallel(16)',
+                           setup='from __main__ import run_parallel',
+                           number=1))
+
     # plot the timing statistics
     plt.plot_results(bases, procs_list, algorithm_name, pngfilename)
 

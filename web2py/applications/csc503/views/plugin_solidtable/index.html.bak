@@ -1,3 +1,0 @@
-{{extend 'plugin_cs_monitor/layout.html'}}
-<h1>This is the plugin_solidtable/index.html template</h1>
-{{=BEAUTIFY(response._vars)}}

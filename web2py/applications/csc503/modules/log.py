@@ -19,7 +19,7 @@ class psim2web2pyLogger(object):
         self.logger.addHandler(self.handler)
         self.level = level
 
-    def log_system_info(self, algorithm_name, debug=False):
+    def log_system_info(self, algorithm_name):
         header0 = '****%s****' % algorithm_name
         header1 = '****SYSTEM INFORMATION****'
         python_version = 'Python version    : %s' % platform.python_version()
@@ -31,7 +31,7 @@ class psim2web2pyLogger(object):
         interpreter = 'interpreter       : %s' % platform.architecture()[0]
         node = 'node              : %s' % platform.node()
         plat = 'platform          : %s' % platform.platform()
-        if (self.level == logging.DEBUG) and (debug is True):
+        if self.level == logging.DEBUG:
             self.logger.debug(header0)
             self.logger.debug(header1)
             self.logger.debug(python_version)
@@ -43,7 +43,7 @@ class psim2web2pyLogger(object):
             self.logger.debug(interpreter)
             self.logger.debug(node)
             self.logger.debug(plat)
-        if (self.level == logging.INFO) and (debug is False):
+        if self.level == logging.INFO:
             self.logger.info(header0)
             self.logger.info(header1)
             self.logger.info(python_version)
@@ -57,16 +57,16 @@ class psim2web2pyLogger(object):
             self.logger.info(plat)
 
     def setup(self, type, input_data, debug=False):
-        if (self.level == logging.DEBUG) and (debug is True):
+        if self.level == logging.DEBUG:
             self.logger.debug('****Run %s****' % type)
             self.logger.debug('input data       : %s' % input_data)
-        if (self.level == logging.INFO) and (debug is False):
+        if self.level == logging.INFO:
             self.logger.info('****Run %s****' % type)
             self.logger.info('input data       : %s' % input_data)
 
     def log_a_value(self, val, debug=False):
-        if (self.level == logging.DEBUG) and (debug is True):
+        if self.level == logging.DEBUG:
             self.logger.debug('%s' % val)
-        if (self.level == logging.INFO) and (debug is False):
+        if self.level == logging.INFO:
             self.logger.info('%s' % val)
 

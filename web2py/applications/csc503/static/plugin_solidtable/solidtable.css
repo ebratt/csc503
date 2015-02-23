@@ -1,5 +1,5 @@
 /* original by: http://activeadmin.info/ */
-table.solidtable { width: 100%%; margin-bottom: 10px; border: 0; border-spacing: 0; border-collapse:separate;}
+table.solidtable { width: 100%; margin-bottom: 10px; border: 0; border-spacing: 0; border-collapse:separate;}
   table.solidtable th {
     background: #efefef;
     background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#dfe1e2));
@@ -11,7 +11,7 @@ table.solidtable { width: 100%%; margin-bottom: 10px; border: 0; border-spacing:
     -webkit-box-shadow: 0 1px 2px #aaaaaa;
     text-shadow: white 0 1px 0;
     border-bottom: 1px solid #ededed;
-    font-size: 1.0em; font-weight: bold; line-height: 140%%; color: #5e6469;
+    font-size: 1.0em; font-weight: bold; line-height: 140%; color: #5e6469;
     word-break: break-all;
     padding: 5px 12px 3px 12px;
     margin-bottom: 0.5em;
@@ -46,15 +46,16 @@ table.solidtable { width: 100%%; margin-bottom: 10px; border: 0; border-spacing:
       background: url("orderby.png") no-repeat 0 4px;
       padding-left: 13px; }
     table.solidtable th a.orderby-asc {
-      background-position: 0 -56px; }
-    table.solidtable th a.orderby-desc {
       background-position: 0 -26px; }
+    table.solidtable th a.orderby-desc {
+      background-position: 0 -56px; }
     table.solidtable th a.orderby-asc, table.solidtable th a.orderby-desc {
       border-bottom: 1px solid #dfe1e2; }
-  table.solidtable tr.even td { background: #f4f5f5; }
+  /*table.solidtable tr.even td { background: #f4f5f5; }*/
   table.solidtable td {
     padding: 2px 5px 0px 5px;
     border-bottom: 1px solid #e8e8e8;
     vertical-align: top; 
     word-break: break-all;}
   table.solidtable tr.rowselected td { background: #fff0f0;  }
+  table.solidtable tr:hover { background: #ffa; }

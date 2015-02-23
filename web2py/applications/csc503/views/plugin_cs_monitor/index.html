@@ -1,5 +1,6 @@
 {{extend 'plugin_cs_monitor/layout.html'}}
 
+{{if auth.has_membership('admin'):}}
 <div class="row">
     <div class="col-md-12">
         <div id="cs_monitor_plugin_utilities">
@@ -40,6 +41,7 @@
     </div>
   </div>
 </div>
+{{pass}}
 
 
 {{refresh = request.vars.refresh == '1'}}
