@@ -109,7 +109,7 @@ def api():
     return dict(GET=GET, POST=POST, PUT=PUT, DELETE=DELETE)
 
 
-@auth.requires_membership("admin") # uncomment to enable security 
+@auth.requires_membership("admin") 
 def list_users():
     btn = lambda row: A("Edit", _href=URL('manage_user', args=row.auth_user.id))
     db.auth_user.edit = Field.Virtual(btn)
@@ -119,11 +119,11 @@ def list_users():
     table = TABLE(THEAD(TR(*[B(header) for header in headers])),
                   TBODY(*[TR(*[TD(row[field]) for field in fields]) \
                         for row in rows]))
-    table["_class"] = "table table-striped table-bordered table-condensed"
+    table["_class"] = "table table-striped table-bordered table-condensed table-hover"
     return dict(table=table)
 
 
-@auth.requires_membership("admin") # uncomment to enable security 
+@auth.requires_membership("admin") 
 def manage_user():
     user_id = request.args(0) or redirect(URL('list_users'))
     form = SQLFORM(db.auth_user, user_id).process()
@@ -134,7 +134,7 @@ def manage_user():
     return dict(form=form,membership_panel=membership_panel)
 
 
-@auth.requires_membership("admin") # uncomment to enable security 
+@auth.requires_membership("admin") 
 def manage_membership():
     user_id = request.args(0) or redirect(URL('list_users'))
     db.auth_membership.user_id.default = int(user_id)
@@ -148,3 +148,23 @@ def manage_membership():
                        csv=False,
                        user_signature=False)
     return form
+
+@auth.requires_membership('admin')
+def list_algorithms():
+    # btn = lambda row: A('Edit', _href=URL('manage_algorithm', args=row.algorithm.id))
+    # db.algorithm.edit = Field.Virtual(btn)
+    # rows = db(db.algorithm).select()
+    # headers = ['ID', 'Name', 'Description', 'Edit']
+    # fields = ['id', 'Name', 'Description', 'edit']
+    # table = TABLE(THEAD(TR(*[B(header) for header in headers])),
+    #               TBODY(*[TR(*[TD(row[field]) for field in fields]) \
+    #                     for row in rows]))
+    table = SQLFORM.grid(db.algorithm,
+                         searchable=False,
+                         deletable=False,
+                         details=False,
+                         selectable=False,
+                         csv=False,
+                         user_signature=False)
+    return dict(table=table)
+

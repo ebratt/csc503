@@ -33,8 +33,11 @@ if auth.is_logged_in():
     ]
     if auth.has_membership('admin'):
 		response.menu += [
-			('Admin', False, URL('default', 'list_users'))
-	]
+            (T('Admin'), False, URL('default', 'index'), [
+                (T('Manage Users'), False, URL('default', 'list_users')),
+                (T('Manage Algorithms'), False, URL('default', 'list_algorithms'))
+                ]
+            )]
 
 
 DEVELOPMENT_MENU = True

@@ -1,7 +1,4 @@
-"""
-Created by Eric Bratt, 2015
-
-"""
+# -*- coding: utf-8 -*-
 
 import platform
 import multiprocessing as mp
@@ -56,7 +53,7 @@ class psim2web2pyLogger(object):
             self.logger.info(node)
             self.logger.info(plat)
 
-    def setup(self, type, input_data, debug=False):
+    def setup(self, type, input_data):
         if self.level == logging.DEBUG:
             self.logger.debug('****Run %s****' % type)
             self.logger.debug('input data       : %s' % input_data)
@@ -65,8 +62,8 @@ class psim2web2pyLogger(object):
             self.logger.info('input data       : %s' % input_data)
 
     def log_a_value(self, val, debug=False):
-        if self.level == logging.DEBUG:
+        if self.level == logging.DEBUG and debug:
             self.logger.debug('%s' % val)
-        if self.level == logging.INFO:
+        if self.level == logging.INFO and not debug:
             self.logger.info('%s' % val)
 

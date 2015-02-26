@@ -23,7 +23,8 @@ topology = SWITCH
 bases = []
 procs_list = ['serial', '2', '4', '8', '16']
 logger = None
-
+debug = False
+# TODO: accept all variables as input rather than hard-coding them
 # input domain
 a = None  # time zero
 b = None  # time 1 second
@@ -58,14 +59,14 @@ def plot(B):
 
 def serial_print(A):
     B = A[1:-1]
-    logger.log_a_value('B is: %s' % B)
+    logger.log_a_value('B is: %s' % B, debug)
     plot(B)
 
 
 def run_serial():
     logger.setup('serial', input_data)
     A = [random.random() for k in range(n)]
-    logger.log_a_value('A: %s' % A)
+    logger.log_a_value('A: %s' % A, debug)
 
     for t in range(200):
         A = evolve(A)
@@ -74,14 +75,14 @@ def run_serial():
         if t % 10 == 0:
             serial_print(A)
         t += 1
-    logger.log_a_value('A evolved is: %s' % A)
+    logger.log_a_value('A evolved is: %s' % A, debug)
 
 
 def parallel_print(comm, A):
     B = A[1:-1]
     B = comm.all2one_collect(0, B)
     if comm.rank == 0:
-        logger.log_a_value('B is: %s' % B)
+        logger.log_a_value('B is: %s' % B, debug)
 
 
 def run_parallel(p):
@@ -90,7 +91,7 @@ def run_parallel(p):
     if comm.rank == root:
         logger.setup('parallel (%s)' % p, input_data)
         A = [random.random() for k in range(n)]
-        logger.log_a_value('A is: %s' % A)
+        logger.log_a_value('A is: %s' % A, debug)
     else:
         A = None
 
@@ -145,7 +146,7 @@ if __name__ == "__main__":
         log_level = logging.DEBUG
     logger = log.psim2web2pyLogger('root', logfile, log_level)
     logger.log_system_info(algorithm_name)
-    logger.log_a_value('main: START')
+    logger.log_a_value('main: START', debug)
     # input domain
     a = 0.0  # time zero
     b = 1.0  # time 1 second
@@ -193,9 +194,9 @@ if __name__ == "__main__":
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
     upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
-    logger.log_a_value('log_payload: %s' % log_payload)
-    logger.log_a_value('plot_payload: %s' % plot_payload)
-    logger.log_a_value('main: END')
+    logger.log_a_value('log_payload: %s' % log_payload, True)
+    logger.log_a_value('plot_payload: %s' % plot_payload, True)
+    logger.log_a_value('main: END', debug)
     # get the upload responses
     log_r, plot_r, upload_r = \
         utility.make_requests(api_url, auth, log_files, plot_files, upload_files,

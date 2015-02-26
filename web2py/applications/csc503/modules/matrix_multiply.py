@@ -1,10 +1,4 @@
-"""
-Created by Eric Bratt, 2015
-provide the number of random vectors, N
-
-
-example provided by Massimo Di Pierro
-"""
+# -*- coding: utf-8 -*-
 
 import random
 import logging
@@ -21,7 +15,8 @@ topology = SWITCH
 bases = []
 procs_list = ['serial', '2', '3', '4', '6']
 logger = None
-
+debug = False
+# TODO: accept all variables as input rather than hard-coding them
 D = 3
 serial_result = None
 
@@ -34,9 +29,14 @@ def make_random_vectors(N):
 
 def mul(M,v):
     u = [0,0,0]
+    logger.log_a_value('M              : %s' % str(M), True)
+    logger.log_a_value('v              : %s' % str(v), True)
     for r in range(D):
         for c in range(D):
+            logger.log_a_value('step %d.%d u[%d]: %f += %f * %f' %
+                               (r, c, r, u[r], M[r][c], v[c]), True)
             u[r] += M[r][c]*v[c]
+            logger.log_a_value('step %d.%d u[%d]: %s' % (r, c, r, u), True)
     return u
 
 
@@ -55,17 +55,17 @@ def run_parallel(p):
         head = min(input_data, 5)
         M = [[1,2,3],[0,2,1],[3,2,0]]
         V = make_random_vectors(N)
-        logger.log_a_value('N is              : %s' % N)
-        logger.log_a_value('M is              : %s' % M)
-        logger.log_a_value('V is              : %s' % V)
-        logger.log_a_value('# processes       : %s' % p)
+        logger.log_a_value('N is              : %s' % N, True)
+        logger.log_a_value('M is              : %s' % M, True)
+        logger.log_a_value('V is              : %s' % V, True)
+        logger.log_a_value('# processes       : %s' % p, True)
     M = comm.one2all_broadcast(0,M)
     Vp = comm.one2all_scatter(0,V)
     Up = map(lambda v: mul(M,v), Vp)
     U = concat(comm.all2one_collect(0,Up))
     if comm.rank==0:
-        logger.log_a_value('U is              : %s' % U)
-        logger.log_a_value('equals serial?    : %s' % (U==serial_result))
+        logger.log_a_value('U is              : %s' % U, debug)
+        logger.log_a_value('equals serial?    : %s' % (U==serial_result), True)
     else:
         os.kill(comm.pid, signal.SIGTERM)
 
@@ -75,8 +75,9 @@ def run_serial():
     N = input_data
     M = [[1,2,3],[0,2,1],[3,2,0]]
     V = make_random_vectors(N)
+    logger.log_a_value('V              : %s' % V, True)
     serial_result = map(lambda v: mul(M,v), V)
-    logger.log_a_value('result              : %s' % serial_result)
+    logger.log_a_value('result              : %s' % serial_result, debug)
 
 
 if __name__ == "__main__":
@@ -104,7 +105,7 @@ if __name__ == "__main__":
         log_level = logging.DEBUG
     logger = log.psim2web2pyLogger('root', logfile, log_level)
     logger.log_system_info(algorithm_name)
-    logger.log_a_value('main: START')
+    logger.log_a_value('main: START', debug)
 
     # serial
     bases.append(ti.timeit(stmt='run_serial()',
@@ -138,9 +139,9 @@ if __name__ == "__main__":
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
     upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
-    logger.log_a_value('log_payload: %s' % log_payload)
-    logger.log_a_value('plot_payload: %s' % plot_payload)
-    logger.log_a_value('main: END')
+    logger.log_a_value('log_payload: %s' % log_payload, True)
+    logger.log_a_value('plot_payload: %s' % plot_payload, True)
+    logger.log_a_value('main: END', debug)
     # get the upload responses
     log_r, plot_r, upload_r = \
         utility.make_requests(api_url, auth, log_files, plot_files, upload_files,

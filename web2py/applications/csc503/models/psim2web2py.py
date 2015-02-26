@@ -2,9 +2,10 @@
 import datetime
 
 db.define_table('algorithm',
-                Field('Name', 'string'),
+                Field('Name', 'string', writable=False),
                 Field('Description', 'text'),
                 format='%(Name)s')
+# TODO: provide examples of each algorithm's input
 
 db.define_table('simulation',
                 Field('simulation_date', 'datetime', writable=False, default=datetime.datetime.today()),

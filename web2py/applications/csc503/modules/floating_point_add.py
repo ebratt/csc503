@@ -9,24 +9,27 @@ import log
 import sys
 import plot as plt
 import utility
-
+# TODO: accept all variables as input rather than hard-coding them
 input_data = None
 topology = SWITCH
 bases = []
 procs_list = ['serial', '2', '3', '4', '6']
 logger = None
+debug = False
 
 
 def run_serial():
     logger.setup('serial', input_data)
+    random.seed(12345)
     a = [random.random() for _ in range(input_data)]
+    random.seed(12345)
     b = [random.random() for _ in range(input_data)]
     head = min(input_data, 5)
     scalar = sum(a[i] * b[i] for i in range(input_data))
-    logger.log_a_value('head of a         : %s' % a[:head])
-    logger.log_a_value('head of b         : %s' % b[:head])
-    logger.log_a_value('data size         : %d' % input_data)
-    logger.log_a_value('result            : %f' % scalar)
+    logger.log_a_value('head of a         : %s' % a[:head], debug)
+    logger.log_a_value('head of b         : %s' % b[:head], debug)
+    logger.log_a_value('data size         : %d' % input_data, debug)
+    logger.log_a_value('result            : %f' % scalar, debug)
 
 
 def run_parallel(p):
@@ -35,12 +38,14 @@ def run_parallel(p):
     if comm.rank == 0:
         logger.setup('parallel (%s)' % p, input_data)
         head = min(input_data, 5)
+        random.seed(12345)
         a = [random.random() for _ in range(input_data)]
+        random.seed(12345)
         b = [random.random() for _ in range(input_data)]
-        logger.log_a_value('head of a         : %s' % a[:head])
-        logger.log_a_value('head of b         : %s' % b[:head])
-        logger.log_a_value('data size         : %d' % input_data)
-        logger.log_a_value('# processes       : %f' % p)
+        logger.log_a_value('head of a         : %s' % a[:head], debug)
+        logger.log_a_value('head of b         : %s' % b[:head], debug)
+        logger.log_a_value('data size         : %d' % input_data, debug)
+        logger.log_a_value('# processes       : %f' % p, debug)
         for k in range(1, p):
             comm.send(k, a[k * h:k * h + h])
             comm.send(k, b[k * h:k * h + h])
@@ -51,7 +56,7 @@ def run_parallel(p):
     if comm.rank == 0:
         for k in range(1, p):
             scalar += comm.recv(k)
-        logger.log_a_value('result            : %f' % scalar)
+        logger.log_a_value('result            : %f' % scalar, debug)
     else:
         comm.send(0, scalar)
         os.kill(comm.pid, signal.SIGTERM)
@@ -82,7 +87,7 @@ if __name__ == "__main__":
         log_level = logging.DEBUG
     logger = log.psim2web2pyLogger('root', logfile, log_level)
     logger.log_system_info(algorithm_name)
-    logger.log_a_value('main: START')
+    logger.log_a_value('main: START', debug)
 
     # serial
     bases.append(ti.timeit(stmt='run_serial()',
@@ -116,9 +121,9 @@ if __name__ == "__main__":
     log_payload = {'simulation': simulation_id, 'log_owner': owner_id}
     plot_payload = {'simulation': simulation_id, 'plot_owner': owner_id}
     upload_payload = {'simulation': simulation_id, 'upload_owner': owner_id}
-    logger.log_a_value('log_payload: %s' % log_payload)
-    logger.log_a_value('plot_payload: %s' % plot_payload)
-    logger.log_a_value('main: END')
+    logger.log_a_value('log_payload: %s' % log_payload, True)
+    logger.log_a_value('plot_payload: %s' % plot_payload, True)
+    logger.log_a_value('main: END', debug)
     # get the upload responses
     log_r, plot_r, upload_r = \
         utility.make_requests(api_url, auth, log_files, plot_files, upload_files,
