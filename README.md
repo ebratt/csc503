@@ -12,7 +12,7 @@ The assignment was to pick one or more algorithms and parallelize them with PSim
 I chose to implement a front-end using <a href="http://www.web2py.com">web2py</a>, a full-stack web application framework, also created by Massimo Di Pierro. 
 
 ## Demo
-You can demo the application at <a href="https://ebratt.pythonanywhere.com/csc503">psim2web2py</a>.
+You can demo the application at <a href="https://ebratt.pythonanywhere.com/csc503">psim2web2py</a>. When you launch the web2py server, use the following command line options: -a <admin password> -K csc503,csc503 -X
 
 ## Feedback
 Please <a href="mailto: eric_bratt@yahoo.com">provide</a> feedback.
